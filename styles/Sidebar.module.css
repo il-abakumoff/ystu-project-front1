@@ -1,0 +1,60 @@
+/* Сайдбар с дисциплинами */
+.sidebar {
+  width: 250px;
+  flex-shrink: 0;
+  background: #f4f4f4;
+  padding: 20px;
+  border-right: 2px solid #ddd;
+}
+
+/* Заголовок "Список дисциплин" */
+.sidebar .discipline-list-title {
+  font-size: 20px;
+  font-weight: bold;
+  text-decoration: underline;
+  margin-bottom: 20px;
+}
+
+.sidebar ul {
+  list-style: none;
+  padding: 0;
+}
+
+.sidebar li {
+  padding: 10px;
+  cursor: pointer;
+  border-radius: 5px;
+}
+
+.sidebar li:hover {
+  background: #ddd;
+}
+
+.sidebar .checkButton {
+  margin-bottom: 20px;
+  width: 100%;
+  padding: 10px;
+  background: rgb(255, 195, 66);
+  border: none;
+  color: black;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.draggableItem {
+  cursor: grab;
+  padding: 10px;
+  margin-bottom: 5px;
+  background-color: #f0f0f0;
+  border-radius: 5px;
+  transition: background-color 0.2s;
+}
+
+.draggableItem:hover {
+  background-color: #e0e0e0;
+}
+
+.selected {
+  background-color: #d4e6ff;
+  border-left: 3px solid #3b82f6;
+}

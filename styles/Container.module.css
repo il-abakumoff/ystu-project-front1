@@ -1,0 +1,8 @@
+/* Основные стили */
+.container {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  font-family: Arial, sans-serif;
+  color: black;
+}

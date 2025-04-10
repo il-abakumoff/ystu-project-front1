@@ -1,0 +1,149 @@
+/* Боковая панель атрибутов */
+.attributes {
+  display: flex;
+  flex-direction: column;
+  flex-shrink: 0;
+  width: 300px;
+  height: 100%;
+  background: #f4f4f4;
+  padding: 20px;
+  border-left: 2px solid #ddd;
+  overflow-y: auto;
+  scrollbar-width: thin;
+}
+
+/* Стиль для полосы прокрутки (для Webkit браузеров) */
+.attributes::-webkit-scrollbar {
+  width: 8px;
+}
+
+.attributes::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  border-radius: 10px;
+}
+
+.attributes::-webkit-scrollbar-thumb {
+  background: #c1c1c1;
+  border-radius: 10px;
+}
+
+.attributes::-webkit-scrollbar-thumb:hover {
+  background: #a1a1a1;
+}
+
+/* Заголовок "Атрибуты дисциплин" */
+.attributes .title {
+  font-size: 18px;
+  font-weight: bold;
+  text-decoration: underline;
+  margin-bottom: 20px;
+}
+
+/* Формы и элементы внутри панели */
+.attributes label {
+  font-size: 16px;
+  font-weight: normal;
+  margin-top: 15px;
+  display: block;
+}
+
+/* Поля ввода, выпадающие списки */
+.attributes input,
+.attributes select {
+  width: 100%;
+  padding: 8px;
+  margin-top: 5px;
+  margin-bottom: 15px;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+  background-color: #f1f1f1;
+  color: #333;
+}
+
+/* Для каждой строки с чекбоксом и подписью */
+.attributes .checkbox-row {
+  display: flex;
+  align-items: center;
+  margin-top: 10px;
+  margin-bottom: 10px;
+}
+
+/* Для чекбоксов */
+.attributes input[type="checkbox"] {
+  width: auto;
+  height: auto;
+  margin-top: 10px;
+  margin-right: 5px;
+  margin-left: 0;
+  transform: scale(0.8);
+  vertical-align: middle;
+}
+
+/* Для подписей чекбоксов */
+.attributes .checkbox-row label {
+  margin-top: 0;
+  margin-left: 5px;
+  vertical-align: middle;
+}
+
+/* Каждую пару чекбокс + подпись оборачиваем в отдельный div */
+.attributes .checkbox-row + .checkbox-row {
+  margin-top: 10px;
+}
+
+/* Для меток чекбоксов */
+.attributes .checkbox-row label {
+  margin-left: 5px;
+}
+
+.search-results {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 15px;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+}
+
+.search-results div {
+  padding: 5px;
+  font-size: 14px;
+  cursor: pointer;
+}
+
+.search-results div:hover {
+  background: #ddd;
+}
+
+.add-symbol {
+  float: right;
+  visibility: hidden;
+}
+
+.search-results div:hover .add-symbol {
+  visibility: visible;
+}
+
+.competence-bricks {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.competence-bricks div {
+  display: flex;
+  align-items: center;
+  padding: 5px 10px;
+  background: #ddd;
+  border-radius: 5px;
+  font-size: 14px;
+  cursor: pointer;
+}
+
+.competence-bricks div:hover {
+  background: #f88;
+}
+
+.invalid {
+  border: 2px solid #ff4444 !important;
+  border-radius: 4px;
+}

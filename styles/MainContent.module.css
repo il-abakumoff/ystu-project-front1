@@ -1,0 +1,7 @@
+/* Основной контейнер для сайдбара и контента */
+.main-content {
+  display: flex;
+  flex-grow: 1;
+  width: 100%;
+  overflow: hidden;
+}

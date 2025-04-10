@@ -1,0 +1,46 @@
+/* Хедер */
+.header {
+  background-color: #f5f5f5;
+  padding: 15px;
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  font-size: 24px;
+  font-weight: bold;
+}
+
+/* Логотип */
+.header .logo {
+  width: 150px;
+  height: auto;
+  margin-right: 10px;
+}
+
+/* Контейнер для наименования файла и кнопок */
+.header .file-info {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+/* Заголовок "наименование файла" */
+.header .file-info .file-name {
+  font-size: 18px;
+  font-weight: normal;
+}
+
+/* Кнопки "файл" и "вид" */
+.header .file-info .file-buttons button {
+  padding: 5px 10px;
+  margin-right: 10px;
+  font-size: 14px;
+  background-color: transparent;
+  border: none;
+  color: #333;
+  cursor: pointer;
+  font-weight: bold;
+}
+
+.header .file-info .file-buttons button:hover {
+  color: #0070f3;
+}

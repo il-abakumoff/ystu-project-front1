@@ -1,0 +1,54 @@
+/* Содержимое модального окна */
+.modalContent {
+  background-color: #fefefe;
+  padding: 24px 78px;
+  width: fit-content;
+  border-radius: 5px;
+  margin: 0;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  -ms-transform: translate(-50%, -50%);
+  transform: translate(-50%, -50%);
+}
+
+/* Заголовок "Добавить ядро" */
+.modalContent .title {
+  font-size: 20px;
+  font-weight: bold;
+  margin-bottom: 20px;
+}
+
+/* Формы и элементы внутри модального окна */
+.modalContent label {
+  font-size: 18px;
+  font-weight: normal;
+  display: block;
+}
+
+/* Поля ввода, выпадающие списки */
+.modalContent input {
+  width: 100%;
+  padding: 8px;
+  margin-bottom: 15px;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+  background-color: #f1f1f1;
+  color: #333;
+}
+
+.modalContent button {
+  margin-top: 5px;
+  width: 100%;
+  padding: 12px;
+  background: #ffa756;
+  border: none;
+  border-radius: 3px;
+  color: #343434;
+  font-size: 20px;
+  cursor: pointer;
+}
+
+.cancel {
+  background: #ff5656 !important;
+}
