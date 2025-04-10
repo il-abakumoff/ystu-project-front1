@@ -4,41 +4,80 @@ import React from "react";
 import sidebar from "@/styles/Sidebar.module.css";
 
 interface SidebarProps {
-  checkStudyPlan: () => void;
-  disciplines: any[];
-  selectedDiscipline: any;
-  handleDisciplineClick: (discipline: any) => void;
-  handleDragStart: (discipline: any) => void;
+    checkStudyPlan: () => void;
+    disciplines: any[];
+    selectedDiscipline: any;
+    handleDisciplineClick: (discipline: any) => void;
+    handleDragStart: (discipline: any) => void;
 }
 
 export const Sidebar = ({
-  checkStudyPlan,
-  disciplines,
-  selectedDiscipline,
-  handleDisciplineClick,
-  handleDragStart,
-}: SidebarProps) => {
-  return (
-    <aside className={sidebar["sidebar"]}>
-      <button className={sidebar.checkButton} onClick={checkStudyPlan}>
-        Проверить карту учебного плана на наличие ошибок
-      </button>
-      <div className={sidebar["discipline-list-title"]}>Список дисциплин</div>
-      <ul>
-        {disciplines.map((discipline) => (
-          <li
-            key={discipline.id}
-            draggable
-            onDragStart={() => handleDragStart(discipline)}
-            onClick={() => handleDisciplineClick(discipline)}
-            className={`${sidebar.draggableItem} ${
-              selectedDiscipline?.id === discipline.id ? sidebar.selected : ""
-            }`}
-          >
-            {discipline.name}
-          </li>
-        ))}
-      </ul>
-    </aside>
-  );
+                            checkStudyPlan,
+                            disciplines,
+                            selectedDiscipline,
+                            handleDisciplineClick,
+                            handleDragStart,
+                        }: SidebarProps) => {
+    return (
+        <aside className={sidebar["sidebar"]}>
+            <button className={sidebar.checkButton} onClick={checkStudyPlan}>
+                Проверить карту учебного плана на наличие ошибок
+            </button>
+            <div className={sidebar["discipline-list-title"]}>Список дисциплин</div>
+            <ul>
+                {/*<li*/}
+                {/*    key="0"*/}
+                {/*    draggable*/}
+                {/*    onDragStart={() => handleDragStart("discipline1")}*/}
+                {/*    onClick={() => handleDisciplineClick("discipline1")}*/}
+                {/*    className={`${sidebar.draggableItem} ${*/}
+                {/*        selectedDiscipline?.id === 0 ? sidebar.selected : ""*/}
+                {/*    }`}*/}
+                {/*>*/}
+                {/*    "discipline1"*/}
+                {/*</li>*/}
+
+                {/*<li*/}
+                {/*    key="1"*/}
+                {/*    draggable*/}
+                {/*    onDragStart={() => handleDragStart("discipline1")}*/}
+                {/*    onClick={() => handleDisciplineClick("discipline1")}*/}
+                {/*    className={`${sidebar.draggableItem} ${*/}
+                {/*        selectedDiscipline?.id === 1 ? sidebar.selected : ""*/}
+                {/*    }`}*/}
+                {/*>*/}
+                {/*    "discipline1"*/}
+                {/*</li>*/}
+
+                {/*<li*/}
+                {/*    key="2"*/}
+                {/*    draggable*/}
+                {/*    onDragStart={() => handleDragStart("discipline1")}*/}
+                {/*    onClick={() => handleDisciplineClick("discipline1")}*/}
+                {/*    className={`${sidebar.draggableItem} ${*/}
+                {/*        selectedDiscipline?.id === 2 ? sidebar.selected : ""*/}
+                {/*    }`}*/}
+                {/*>*/}
+                {/*    "discipline1"*/}
+                {/*</li>*/}
+
+
+                {disciplines.map((discipline) => (
+                    <li
+                        key={discipline.id}
+                        draggable
+                        onDragStart={() => handleDragStart(discipline)}
+                        onClick={() => handleDisciplineClick(discipline)}
+                        className={`${sidebar.draggableItem} ${
+                            selectedDiscipline?.id === discipline.id ? sidebar.selected : ""
+                        }`}
+                    >
+                        {discipline.name}
+                    </li>
+                ))}
+
+
+            </ul>
+        </aside>
+    );
 };
