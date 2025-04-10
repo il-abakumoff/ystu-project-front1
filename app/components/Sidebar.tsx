@@ -25,43 +25,6 @@ export const Sidebar = ({
             </button>
             <div className={sidebar["discipline-list-title"]}>Список дисциплин</div>
             <ul>
-                {/*<li*/}
-                {/*    key="0"*/}
-                {/*    draggable*/}
-                {/*    onDragStart={() => handleDragStart("discipline1")}*/}
-                {/*    onClick={() => handleDisciplineClick("discipline1")}*/}
-                {/*    className={`${sidebar.draggableItem} ${*/}
-                {/*        selectedDiscipline?.id === 0 ? sidebar.selected : ""*/}
-                {/*    }`}*/}
-                {/*>*/}
-                {/*    "discipline1"*/}
-                {/*</li>*/}
-
-                {/*<li*/}
-                {/*    key="1"*/}
-                {/*    draggable*/}
-                {/*    onDragStart={() => handleDragStart("discipline1")}*/}
-                {/*    onClick={() => handleDisciplineClick("discipline1")}*/}
-                {/*    className={`${sidebar.draggableItem} ${*/}
-                {/*        selectedDiscipline?.id === 1 ? sidebar.selected : ""*/}
-                {/*    }`}*/}
-                {/*>*/}
-                {/*    "discipline1"*/}
-                {/*</li>*/}
-
-                {/*<li*/}
-                {/*    key="2"*/}
-                {/*    draggable*/}
-                {/*    onDragStart={() => handleDragStart("discipline1")}*/}
-                {/*    onClick={() => handleDisciplineClick("discipline1")}*/}
-                {/*    className={`${sidebar.draggableItem} ${*/}
-                {/*        selectedDiscipline?.id === 2 ? sidebar.selected : ""*/}
-                {/*    }`}*/}
-                {/*>*/}
-                {/*    "discipline1"*/}
-                {/*</li>*/}
-
-
                 {disciplines.map((discipline) => (
                     <li
                         key={discipline.id}
@@ -75,8 +38,6 @@ export const Sidebar = ({
                         {discipline.name}
                     </li>
                 ))}
-
-
             </ul>
         </aside>
     );
