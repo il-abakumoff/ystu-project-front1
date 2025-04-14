@@ -15,6 +15,9 @@ import { Sidebar } from "@/app/components/Sidebar";
 import { SemesterTable } from "@/app/components/SemesterTable";
 import { AttributesPanel } from "@/app/components/AttributesPanel";
 import { CoreModal } from "@/app/components/CoreModal";
+
+import { ErrorWindow } from "@/app/components/ErrorWindow";
+
 import { useDisciplines } from "@/app/hooks/useDisciplines";
 import { useTableState } from "@/app/hooks/useTableState";
 import { useAlert } from "@/app/hooks/useAlert";
@@ -201,34 +204,44 @@ const Home = () => {
 
         {/* Добавляем новую вкладку для отображения результатов */}
         {showValidationTab && (
-            <div
-                ref={tabRef}
-                className={errorWindow["validation-tab"]}
-                style={{
-                  left: `${position.x}px`,
-                  top: `${position.y}px`,
-                  width: `${size.width}px`,
-                  height: `${size.height}px`,
-                  cursor: 'grab'
-                }}
-                onMouseDown={handleMouseDown}>
-              <button
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    setShowValidationTab(false);
-                  }}
-                  className={errorWindow["close-tab-button"]}
-              >×
-              </button>
-              <h3>Результаты проверки</h3>
-              <div className={errorWindow["tab-content"]}>
-                <pre>{validationResult}</pre>
-              </div>
-              <div
-                  className={errorWindow["resize-handle"]}
-                  onMouseDown={handleResizeMouseDown}
-              />
-            </div>
+            <ErrorWindow
+                tabRef={tabRef}
+                position={position}
+                size={size}
+                setShowValidationTab={setShowValidationTab}
+                validationResult={validationResult}
+                handleMouseDown={handleMouseDown}
+                handleResizeMouseDown={handleResizeMouseDown}
+          />
+            
+            // <div
+            //     ref={tabRef}
+            //     className={errorWindow["validation-tab"]}
+            //     style={{
+            //       left: `${position.x}px`,
+            //       top: `${position.y}px`,
+            //       width: `${size.width}px`,
+            //       height: `${size.height}px`,
+            //       cursor: 'grab'
+            //     }}
+            //     onMouseDown={handleMouseDown}>
+            //   <button
+            //       onClick={(e) => {
+            //         e.stopPropagation();
+            //         setShowValidationTab(false);
+            //       }}
+            //       className={errorWindow["close-tab-button"]}
+            //   >×
+            //   </button>
+            //   <h3>Результаты проверки</h3>
+            //   <div className={errorWindow["tab-content"]}>
+            //     <pre>{validationResult}</pre>
+            //   </div>
+            //   <div
+            //       className={errorWindow["resize-handle"]}
+            //       onMouseDown={handleResizeMouseDown}
+            //   />
+            // </div>
         )}
 
         <div className={table["content-wrapper"]}>

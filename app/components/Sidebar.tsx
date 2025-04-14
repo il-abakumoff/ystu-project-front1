@@ -29,7 +29,7 @@ export const Sidebar = ({
             <button className={sidebar.checkButton} onClick={checkStudyPlan}>
                 Проверить карту учебного плана на наличие ошибок
             </button>
-
+        
             <div className={sidebar["discipline-list-title"]}>Дисциплины</div>
 
             <div className={sidebar.searchContainer}>
@@ -44,6 +44,7 @@ export const Sidebar = ({
 
             <ul>
                 {filteredDisciplines.map((discipline) => (
+
                     <li
                         key={discipline.id}
                         draggable
