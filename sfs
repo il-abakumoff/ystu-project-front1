@@ -1,0 +1,26 @@
+[33mcommit a2a267b7d5c157e389d92ebef80a68a369cc35d3[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mfeature/error-window-component[m[33m)[m
+Author: Ilya <il.abakumoff@gmail.com>
+Date:   Thu Apr 10 23:05:12 2025 +0300
+
+    error-window-component
+
+[33mcommit 4985f887a2f63547ad77ed4da2066db9fdb24f23[m[33m ([m[1;31morigin/develop[m[33m, [m[1;32mdevelop[m[33m)[m
+Merge: 2cee44d 411b703
+Author: Ksenia Panova <94197385+Panovky@users.noreply.github.com>
+Date:   Thu Apr 10 22:34:38 2025 +0300
+
+    Merge pull request #2 from il-abakumoff/feature/add_results_window
+    
+    result window & hiding panel
+
+[33mcommit 411b7031413c92903b26995688f73ef85bc45c27[m
+Author: Ilya <il.abakumoff@gmail.com>
+Date:   Thu Apr 10 16:35:07 2025 +0300
+
+    result window & hiding panel
+
+[33mcommit 2cee44dc192301e0dbbf3d4033f5b332bd83c91f[m[33m ([m[1;31morigin/main[m[33m, [m[1;32mmain[m[33m)[m
+Author: Ilya <il.abakumoff@gmail.com>
+Date:   Thu Apr 10 16:26:24 2025 +0300
+
+    Initial commit

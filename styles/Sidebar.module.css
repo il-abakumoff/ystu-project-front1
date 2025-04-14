@@ -11,8 +11,6 @@
 .sidebar .discipline-list-title {
   font-size: 20px;
   font-weight: bold;
-  text-decoration: underline;
-  margin-bottom: 20px;
 }
 
 .sidebar ul {
@@ -58,3 +56,23 @@
   background-color: #d4e6ff;
   border-left: 3px solid #3b82f6;
 }
+
+.searchContainer {
+  margin: 15px 0;
+}
+
+.searchInput {
+  width: 100%;
+  padding: 8px 12px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  font-size: 14px;
+  box-sizing: border-box;
+}
+
+.searchInput:focus {
+  outline: none;
+  border-color: #4a90e2;
+  box-shadow: 0 0 0 2px rgba(74, 144, 226, 0.2);
+}
+
