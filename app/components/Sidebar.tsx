@@ -1,6 +1,6 @@
 "use client";
 
-import React from "react";
+import React, {useState} from "react";
 import sidebar from "@/styles/Sidebar.module.css";
 
 interface SidebarProps {
@@ -18,14 +18,33 @@ export const Sidebar = ({
                             handleDisciplineClick,
                             handleDragStart,
                         }: SidebarProps) => {
+
+    const [searchTerm, setSearchTerm] = useState("");
+    const filteredDisciplines = disciplines.filter(discipline => // функция для фильтрации дисциплин
+        discipline.name.toLowerCase().includes(searchTerm.toLowerCase())
+    );
+
     return (
         <aside className={sidebar["sidebar"]}>
             <button className={sidebar.checkButton} onClick={checkStudyPlan}>
                 Проверить карту учебного плана на наличие ошибок
             </button>
-            <div className={sidebar["discipline-list-title"]}>Список дисциплин</div>
+        
+            <div className={sidebar["discipline-list-title"]}>Дисциплины</div>
+
+            <div className={sidebar.searchContainer}>
+                <input
+                    type="text"
+                    placeholder="Поиск дисциплин..."
+                    value={searchTerm}
+                    onChange={(e) => setSearchTerm(e.target.value)}
+                    className={sidebar.searchInput}
+                />
+            </div>
+
             <ul>
-                {disciplines.map((discipline) => (
+                {filteredDisciplines.map((discipline) => (
+
                     <li
                         key={discipline.id}
                         draggable
