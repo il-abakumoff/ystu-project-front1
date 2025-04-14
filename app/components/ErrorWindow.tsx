@@ -11,8 +11,6 @@ interface ErrorWindowProps {
     size: { width: number; height: number };
     tabRef: React.RefObject<HTMLDivElement | null>;
     validationResult: string;
-
-    // checkStudyPlan: () => void;
 }
 
 export const ErrorWindow = ({
