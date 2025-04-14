@@ -9,7 +9,7 @@ interface ErrorWindowProps {
     handleResizeMouseDown: (e: React.MouseEvent) => void;
     position: { x: number; y: number };
     size: { width: number; height: number };
-    tabRef: React.RefObject<HTMLDivElement>;
+    tabRef: React.RefObject<HTMLDivElement | null>;
     validationResult: string;
 
     // checkStudyPlan: () => void;
