@@ -1,6 +1,6 @@
 "use client";
 
-import React, {useEffect, useRef} from "react";
+import React, {useEffect, useRef, useState} from "react";
 import attributes from "@/styles/Attributes.module.css";
 import {Discipline} from "@/app/types";
 
@@ -14,7 +14,6 @@ interface AttributesPanelProps {
     setSearchQuery: React.Dispatch<React.SetStateAction<string>>;
     showAllCompetences: boolean;
     setShowAllCompetences: React.Dispatch<React.SetStateAction<boolean>>;
-
     onClose: () => void;
 }
 
@@ -30,8 +29,10 @@ export const AttributesPanel = ({
                                     setShowAllCompetences,
                                     onClose,
                                 }: AttributesPanelProps) => {
-
     const searchInputRef = useRef<HTMLDivElement>(null);
+    const panelRef = useRef<HTMLDivElement>(null);
+    const [isResizing, setIsResizing] = useState(false);
+    const [panelWidth, setPanelWidth] = useState(300);
 
     const handleNumberChange = (
         field: keyof Discipline,
@@ -42,6 +43,37 @@ export const AttributesPanel = ({
         const finalValue = isNaN(numericValue) ? min : Math.max(numericValue, min);
         handleAttributeChange(field, finalValue);
     };
+
+    const startResizing = (e: React.MouseEvent) => {
+        e.preventDefault();
+        setIsResizing(true);
+    };
+
+    useEffect(() => {
+        const handleMouseMove = (e: MouseEvent) => {
+            if (!isResizing || !panelRef.current) return;
+
+            const newWidth = window.innerWidth - e.clientX;
+            if (newWidth > 250 && newWidth < 450) {
+                setPanelWidth(newWidth);
+                panelRef.current.style.width = `${newWidth}px`;
+            }
+        };
+
+        const handleMouseUp = () => {
+            setIsResizing(false);
+        };
+
+        if (isResizing) {
+            window.addEventListener('mousemove', handleMouseMove);
+            window.addEventListener('mouseup', handleMouseUp);
+        }
+
+        return () => {
+            window.removeEventListener('mousemove', handleMouseMove);
+            window.removeEventListener('mouseup', handleMouseUp);
+        };
+    }, [isResizing]);
 
     useEffect(() => {
         const handleClickOutside = (event: MouseEvent) => {
@@ -76,13 +108,22 @@ export const AttributesPanel = ({
         : false;
 
     return (
-        <aside className={attributes["attributes"]}>
+        <aside
+            className={attributes.attributes}
+            ref={panelRef}
+            style={{width: `${panelWidth}px`}}
+        >
+
+            <div
+                className={attributes["resize-handle"]}
+                onMouseDown={startResizing}
+            />
+
             <div className={attributes.title}>
                 {selectedDiscipline
                     ? `Атрибуты: ${selectedDiscipline.name}`
                     : "Атрибуты дисциплин"}
 
-                {/* Добавляем крестик для закрытия */}
                 <button
                     className={attributes["close-button"]}
                     onClick={onClose}
@@ -90,8 +131,6 @@ export const AttributesPanel = ({
                 >
                     ×
                 </button>
-
-
             </div>
 
             <label>Зачётные единицы</label>

@@ -6,7 +6,6 @@ import styles from "@/styles/ReferenceForm.module.css";
 interface ReferenceItem {
     id: number;
     name: string;
-
     [key: string]: any;
 }
 
@@ -22,6 +21,22 @@ interface ReferenceConfig {
 
 const REFERENCES_CONFIG: ReferenceConfig[] = [
     {
+        name: 'competence',
+        path: '/competencies',
+        displayName: 'Компетенции',
+        fields: [
+            {key: 'name', label: 'Название'}
+        ]
+    },
+    {
+        name: 'competency-group',
+        path: '/competency-groups',
+        displayName: 'Группы компетенций',
+        fields: [
+            {key: 'name', label: 'Название'}
+        ]
+    },
+    {
         name: 'discipline',
         path: '/disciplines',
         displayName: 'Дисциплины',
@@ -31,11 +46,14 @@ const REFERENCES_CONFIG: ReferenceConfig[] = [
         ]
     },
     {
-        name: 'control-type',
-        path: '/control-types',
-        displayName: 'Виды зачета',
+        name: 'direction',
+        path: '/directions',
+        displayName: 'Направления подготовки',
         fields: [
-            {key: 'name', label: 'Название'}
+            {key: 'name', label: 'Название'},
+            {key: 'educational_level_id', label: 'Уровень образования'},
+            {key: 'educational_form_id', label: 'Форма обучения'},
+            {key: 'semester_count', label: 'Количество семестров'}
         ]
     },
     {
@@ -55,17 +73,9 @@ const REFERENCES_CONFIG: ReferenceConfig[] = [
         ]
     },
     {
-        name: 'competence',
-        path: '/competences',
-        displayName: 'Компетенции',
-        fields: [
-            {key: 'name', label: 'Название'}
-        ]
-    },
-    {
-        name: 'competence-code',
-        path: '/competence-codes',
-        displayName: 'Коды компетенций',
+        name: 'control-type',
+        path: '/control-types',
+        displayName: 'Виды зачета',
         fields: [
             {key: 'name', label: 'Название'}
         ]
@@ -153,14 +163,21 @@ export const ReferenceForm = ({onClose}: { onClose: () => void }) => {
             const response = await fetch(
                 `http://host.docker.internal:8000${selectedReference!.path}/${item.id}/`
             );
-            if (!response.ok) throw new Error(`Ошибка загрузки элемента: ${response.statusText}`);
+            if (!response.ok) {
+                const errorData = await response.json().catch(() => null);
+                // Обработка 404 ошибки
+                if (response.status === 404) {
+                    throw new Error(errorData?.detail || 'Элемент не найден');
+                }
+                throw new Error(errorData?.detail || `Ошибка загрузки: ${response.statusText}`);
+            }
             const data = await response.json();
 
             setSelectedItem(data);
             setFormData(data);
         } catch (err) {
             console.error("Error loading item details:", err);
-            setError(`Ошибка загрузки элемента: ${err instanceof Error ? err.message : String(err)}`);
+            setError(`Ошибка: ${err instanceof Error ? err.message : String(err)}`);
         } finally {
             setIsLoading(false);
         }
@@ -192,8 +209,7 @@ export const ReferenceForm = ({onClose}: { onClose: () => void }) => {
             return;
         }
 
-        const dataToSend = {...formData};
-
+        const dataToSend = { ...formData };
         Object.keys(dataToSend).forEach(key => {
             if (typeof dataToSend[key] === 'string') {
                 dataToSend[key] = dataToSend[key].trim();
@@ -204,8 +220,6 @@ export const ReferenceForm = ({onClose}: { onClose: () => void }) => {
         setError(null);
 
         try {
-            console.log("Отправляемые данные:", dataToSend); // Отладочная информация
-
             let response: Response;
             const url = selectedItem
                 ? `http://host.docker.internal:8000${selectedReference.path}/${selectedItem.id}/`
@@ -219,12 +233,21 @@ export const ReferenceForm = ({onClose}: { onClose: () => void }) => {
                 body: JSON.stringify(dataToSend)
             });
 
-            console.log("Статус ответа:", response.status); // Отладочная информация
-
             if (!response.ok) {
                 const errorData = await response.json().catch(() => null);
-                console.error("Детали ошибки:", errorData); // Отладочная информация
-                throw new Error(errorData?.message || `Ошибка сохранения: ${response.statusText}`);
+
+                // Обработка 404 ошибки (для GET, PATCH, DELETE)
+                if (response.status === 404) {
+                    throw new Error(errorData?.detail || 'Элемент не найден');
+                }
+
+                // Обработка 409 ошибки (конфликт)
+                if (response.status === 409) {
+                    throw new Error(errorData?.detail || 'Конфликт данных');
+                }
+
+                // Общая обработка ошибок
+                throw new Error(errorData?.detail || `Ошибка ${response.status}: ${response.statusText}`);
             }
 
             const savedItem = await response.json();
@@ -248,7 +271,7 @@ export const ReferenceForm = ({onClose}: { onClose: () => void }) => {
 
         } catch (err) {
             console.error("Error saving reference:", err);
-            setError(`Ошибка сохранения: ${err instanceof Error ? err.message : String(err)}`);
+            setError(`Ошибка: ${err instanceof Error ? err.message : String(err)}`);
         } finally {
             setIsLoading(false);
         }
@@ -270,7 +293,12 @@ export const ReferenceForm = ({onClose}: { onClose: () => void }) => {
             );
 
             if (!response.ok) {
-                throw new Error(`Ошибка удаления: ${response.statusText}`);
+                const errorData = await response.json().catch(() => null);
+                // Обработка 404 ошибки
+                if (response.status === 404) {
+                    throw new Error(errorData?.detail || 'Элемент не найден');
+                }
+                throw new Error(errorData?.detail || `Ошибка удаления: ${response.statusText}`);
             }
 
             // Обновляем список
@@ -376,7 +404,7 @@ export const ReferenceForm = ({onClose}: { onClose: () => void }) => {
                         </div>
 
                         <div className={styles["fields-container"]}>
-                            <h4>{selectedItem ? `${selectedItem.name} — Редактирование` : 'Новый элемент'}</h4>
+                            <h4>{selectedItem ? `${selectedItem.name}` : 'Новый элемент'}</h4>
 
                             {selectedReference.fields.map(field => (
                                 <div key={field.key} className={styles["field-group"]}>

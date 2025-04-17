@@ -1,15 +1,18 @@
-/* Боковая панель атрибутов */
 .attributes {
   display: flex;
   flex-direction: column;
   flex-shrink: 0;
   width: 300px;
+  min-width: 250px;
+  max-width: 450px;
   height: 100%;
   background: #f4f4f4;
   padding: 20px;
   border-left: 2px solid #ddd;
   overflow-y: auto;
   scrollbar-width: thin;
+  position: relative;
+  resize: horizontal;
 }
 
 /* Стиль для полосы прокрутки (для Webkit браузеров) */
@@ -148,9 +151,6 @@
   border-radius: 4px;
 }
 
-
-
-
 .close-button {
   position: absolute;
   right: 15px;
@@ -178,4 +178,26 @@
 .title {
   position: relative;
   padding-right: 30px;
+}
+
+.attributes::-webkit-resizer {
+  display: none;
+}
+
+.resize-handle {
+  position: absolute;
+  left: -5px;
+  top: 0;
+  bottom: 0;
+  width: 10px;
+  cursor: col-resize;
+  z-index: 10;
+}
+
+.resize-handle:hover {
+  background-color: rgba(0, 0, 0, 0.1);
+}
+
+.resize-handle:active {
+  background-color: rgba(0, 0, 0, 0.2);
 }

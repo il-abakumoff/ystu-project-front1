@@ -66,7 +66,7 @@ const Home = () => {
   } = useCompetences(selectedDiscipline, handleAttributeChange);
 
   const { initialModal, coreModal, handleInitialModalClose } =
-    useModals(setColumns);
+      useModals(setColumns);
 
   const [isAttributesPanelVisible, setIsAttributesPanelVisible] = useState(true); //
 
