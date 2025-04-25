@@ -9,14 +9,18 @@ interface ReferenceItem {
     [key: string]: any;
 }
 
+interface ReferenceField {
+    key: string;
+    label: string;
+    type?: 'text' | 'select';
+    reference?: string;
+}
+
 interface ReferenceConfig {
     name: string;
     path: string;
     displayName: string;
-    fields: {
-        key: string;
-        label: string;
-    }[];
+    fields: ReferenceField[];
 }
 
 const REFERENCES_CONFIG: ReferenceConfig[] = [
@@ -41,8 +45,14 @@ const REFERENCES_CONFIG: ReferenceConfig[] = [
         path: '/disciplines',
         displayName: 'Дисциплины',
         fields: [
-            {key: 'name', label: 'Название'},
-            {key: 'short_name', label: 'Короткое название'}
+            { key: 'name', label: 'Название', type: 'text' },
+            { key: 'short_name', label: 'Короткое название', type: 'text' },
+            {
+                key: 'department_id',
+                label: 'Кафедра',
+                type: 'select',
+                reference: 'department' // Указываем, что поле ссылается на справочник department
+            }
         ]
     },
     {
@@ -99,9 +109,35 @@ export const ReferenceForm = ({onClose}: { onClose: () => void }) => {
     const [error, setError] = useState<string | null>(null);
     const [searchTerm, setSearchTerm] = useState("");
 
+    const [referenceData, setReferenceData] = useState<Record<string, ReferenceItem[]>>({});
+
+    const fetchReferenceData = async (referenceName: string) => {
+        const refConfig = REFERENCES_CONFIG.find(r => r.name === referenceName);
+        if (!refConfig) return;
+
+        try {
+            const response = await fetch(`http://host.docker.internal:8000${refConfig.path}/`);
+            if (!response.ok) throw new Error(`Ошибка загрузки: ${response.statusText}`);
+            const data = await response.json();
+            setReferenceData(prev => ({
+                ...prev,
+                [referenceName]: data
+            }));
+        } catch (err) {
+            console.error(`Error fetching ${referenceName}:`, err);
+            setError(`Ошибка загрузки данных для ${refConfig.displayName}`);
+        }
+    };
+
     // Загрузка данных при выборе справочника
     useEffect(() => {
         if (!selectedReference) return;
+
+        selectedReference.fields.forEach(field => {
+            if (field.type === 'select' && field.reference) {
+                fetchReferenceData(field.reference);
+            }
+        });
 
         const fetchData = async () => {
             setIsLoading(true);
@@ -183,7 +219,7 @@ export const ReferenceForm = ({onClose}: { onClose: () => void }) => {
         }
     };
 
-    const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>, field: string) => {
+    const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>, field: string) => {
         setFormData({
             ...formData,
             [field]: e.target.value
@@ -409,12 +445,27 @@ export const ReferenceForm = ({onClose}: { onClose: () => void }) => {
                             {selectedReference.fields.map(field => (
                                 <div key={field.key} className={styles["field-group"]}>
                                     <label>{field.label}:</label>
-                                    <input
-                                        type="text"
-                                        value={formData[field.key] || ""}
-                                        onChange={(e) => handleInputChange(e, field.key)}
-                                        disabled={isLoading}
-                                    />
+                                    {field.type === 'select' && field.reference ? (
+                                        <select
+                                            value={formData[field.key] || ""}
+                                            onChange={(e) => handleInputChange(e, field.key)}
+                                            disabled={isLoading}
+                                        >
+                                            <option value="">Выберите...</option>
+                                            {referenceData[field.reference]?.map(item => (
+                                                <option key={item.id} value={item.id}>
+                                                    {item.name}
+                                                </option>
+                                            ))}
+                                        </select>
+                                    ) : (
+                                        <input
+                                            type="text"
+                                            value={formData[field.key] || ""}
+                                            onChange={(e) => handleInputChange(e, field.key)}
+                                            disabled={isLoading}
+                                        />
+                                    )}
                                 </div>
                             ))}
 
