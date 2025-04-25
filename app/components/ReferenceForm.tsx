@@ -6,6 +6,7 @@ import styles from "@/styles/ReferenceForm.module.css";
 interface ReferenceItem {
     id: number;
     name: string;
+
     [key: string]: any;
 }
 
@@ -45,8 +46,8 @@ const REFERENCES_CONFIG: ReferenceConfig[] = [
         path: '/disciplines',
         displayName: 'Дисциплины',
         fields: [
-            { key: 'name', label: 'Название', type: 'text' },
-            { key: 'short_name', label: 'Короткое название', type: 'text' },
+            {key: 'name', label: 'Название', type: 'text'},
+            {key: 'short_name', label: 'Короткое название', type: 'text'},
             {
                 key: 'department_id',
                 label: 'Кафедра',
@@ -245,7 +246,7 @@ export const ReferenceForm = ({onClose}: { onClose: () => void }) => {
             return;
         }
 
-        const dataToSend = { ...formData };
+        const dataToSend = {...formData};
         Object.keys(dataToSend).forEach(key => {
             if (typeof dataToSend[key] === 'string') {
                 dataToSend[key] = dataToSend[key].trim();
@@ -446,18 +447,20 @@ export const ReferenceForm = ({onClose}: { onClose: () => void }) => {
                                 <div key={field.key} className={styles["field-group"]}>
                                     <label>{field.label}:</label>
                                     {field.type === 'select' && field.reference ? (
-                                        <select
-                                            value={formData[field.key] || ""}
-                                            onChange={(e) => handleInputChange(e, field.key)}
-                                            disabled={isLoading}
-                                        >
-                                            <option value="">Выберите...</option>
-                                            {referenceData[field.reference]?.map(item => (
-                                                <option key={item.id} value={item.id}>
-                                                    {item.name}
-                                                </option>
-                                            ))}
-                                        </select>
+                                        <div className={styles["form-group"]}>
+                                            <select
+                                                value={formData[field.key] || ""}
+                                                onChange={(e) => handleInputChange(e, field.key)}
+                                                disabled={isLoading}
+                                            >
+                                                <option value="">Выберите...</option>
+                                                {referenceData[field.reference]?.map(item => (
+                                                    <option key={item.id} value={item.id}>
+                                                        {item.name}
+                                                    </option>
+                                                ))}
+                                            </select>
+                                        </div>
                                     ) : (
                                         <input
                                             type="text"
