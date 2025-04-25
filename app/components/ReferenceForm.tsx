@@ -61,10 +61,20 @@ const REFERENCES_CONFIG: ReferenceConfig[] = [
         path: '/directions',
         displayName: 'Направления подготовки',
         fields: [
-            {key: 'name', label: 'Название'},
-            {key: 'educational_level_id', label: 'Уровень образования'},
-            {key: 'educational_form_id', label: 'Форма обучения'},
-            {key: 'semester_count', label: 'Количество семестров'}
+            { key: 'name', label: 'Название', type: 'text' },
+            {
+                key: 'educational_level_id',
+                label: 'Уровень образования',
+                type: 'select',
+                reference: 'educational-level' // Новый справочник
+            },
+            {
+                key: 'educational_form_id',
+                label: 'Форма обучения',
+                type: 'select',
+                reference: 'educational-form' // Новый справочник
+            },
+            { key: 'semester_count', label: 'Количество семестров', type: 'text' }
         ]
     },
     {
@@ -97,6 +107,22 @@ const REFERENCES_CONFIG: ReferenceConfig[] = [
         displayName: 'Индикаторы',
         fields: [
             {key: 'name', label: 'Название'}
+        ]
+    },
+    {
+        name: 'educational-level',
+        path: '/educational-levels',
+        displayName: 'Уровни образования',
+        fields: [
+            { key: 'name', label: 'Название', type: 'text' }
+        ]
+    },
+    {
+        name: 'educational-form',
+        path: '/educational-forms',
+        displayName: 'Формы обучения',
+        fields: [
+            { key: 'name', label: 'Название', type: 'text' }
         ]
     }
 ];
