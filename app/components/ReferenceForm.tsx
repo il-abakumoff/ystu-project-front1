@@ -96,7 +96,7 @@ const REFERENCES_CONFIG: ReferenceConfig[] = [
     {
         name: 'control-type',
         path: '/control-types',
-        displayName: 'Виды зачета',
+        displayName: 'Виды контроля',
         fields: [
             {key: 'name', label: 'Название'}
         ]

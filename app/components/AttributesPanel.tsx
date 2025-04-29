@@ -17,6 +17,11 @@ interface AttributesPanelProps {
     onClose: () => void;
 }
 
+interface ControlType {
+    id: number;
+    name: string;
+}
+
 export const AttributesPanel = ({
                                     selectedDiscipline,
                                     handleAttributeChange,
@@ -33,6 +38,28 @@ export const AttributesPanel = ({
     const panelRef = useRef<HTMLDivElement>(null);
     const [isResizing, setIsResizing] = useState(false);
     const [panelWidth, setPanelWidth] = useState(300);
+    const [controlTypes, setControlTypes] = useState<ControlType[]>([]);
+    const [loadingControlTypes, setLoadingControlTypes] = useState(false);
+
+    useEffect(() => {
+        const fetchControlTypes = async () => {
+            setLoadingControlTypes(true);
+            try {
+                const response = await fetch('http://host.docker.internal:8000/control-types');
+                if (!response.ok) {
+                    throw new Error('Ошибка загрузки видов контроля');
+                }
+                const data: ControlType[] = await response.json();
+                setControlTypes(data);
+            } catch (error) {
+                console.error('Ошибка при загрузке видов контроля:', error);
+            } finally {
+                setLoadingControlTypes(false);
+            }
+        };
+
+        fetchControlTypes();
+    }, []);
 
     const handleNumberChange = (
         field: keyof Discipline,
@@ -107,6 +134,13 @@ export const AttributesPanel = ({
         ? !selectedDiscipline.department
         : false;
 
+    const getShortExamType = (name: string): string => {
+        if (!name) return '';
+        // Берем первый символ и делаем заглавным
+        return name.charAt(0).toUpperCase();
+    };
+
+
     return (
         <aside
             className={attributes.attributes}
@@ -133,104 +167,30 @@ export const AttributesPanel = ({
                 </button>
             </div>
 
-            <label>Зачётные единицы</label>
-            <input
-                type="number"
-                className={isInvalidCredits ? attributes.invalid : ""}
-                value={selectedDiscipline?.credits ?? 1}
-                onChange={(e) => handleNumberChange("credits", e.target.value, 1)}
-                disabled={!selectedDiscipline}
-                min="1"
-            />
-
-            <label>Вид зачёта</label>
+            <label>Вид контроля</label>
             <select
-                value={selectedDiscipline?.examType || "Э"}
-                onChange={(e) => handleAttributeChange("examType", e.target.value)}
-                disabled={!selectedDiscipline}
+                value={selectedDiscipline?.examTypeId || ""}
+                onChange={(e) => {
+                    const selectedId = Number(e.target.value);
+                    const selectedType = controlTypes.find(t => t.id === selectedId);
+                    const shortName = getShortExamType(selectedType?.name || "");
+                    handleAttributeChange("examType", shortName || "");
+                    handleAttributeChange("examTypeId", selectedType?.id || null);
+                }}
+                disabled={!selectedDiscipline || loadingControlTypes}
             >
-                <option>Э</option>
-                <option>З</option>
-                <option>ДЗ</option>
-            </select>
-
-            <div className={attributes["checkbox-row"]}>
-                <input
-                    type="checkbox"
-                    id="courseWork"
-                    checked={selectedDiscipline?.hasCourseWork || false}
-                    onChange={(e) =>
-                        handleAttributeChange("hasCourseWork", e.target.checked)
-                    }
-                    disabled={!selectedDiscipline}
-                />
-                <label htmlFor="courseWork">Наличие курсовой</label>
-            </div>
-
-            <div className={attributes["checkbox-row"]}>
-                <input
-                    type="checkbox"
-                    id="practicalWork"
-                    checked={selectedDiscipline?.hasPracticalWork || false}
-                    onChange={(e) =>
-                        handleAttributeChange("hasPracticalWork", e.target.checked)
-                    }
-                    disabled={!selectedDiscipline}
-                />
-                <label htmlFor="practicalWork">Наличие пр. работ</label>
-            </div>
-
-            <label>Выпускающая кафедра</label>
-            <select
-                className={isInvalidDepartment ? attributes.invalid : ""}
-                value={selectedDiscipline?.department || "Кафедра 1"}
-                onChange={(e) => handleAttributeChange("department", e.target.value)}
-                disabled={!selectedDiscipline}
-            >
-                <option>ИСТ</option>
-                <option>ГН</option>
-                <option>Ф</option>
-            </select>
-
-            <label>Коды компетенций</label>
-            <div
-                ref={searchInputRef}
-                className={isInvalidCompetences ? attributes.invalid : ""}
-            >
-                <input
-                    type="text"
-                    placeholder="Поиск компетенций"
-                    value={searchQuery}
-                    onChange={(e) => setSearchQuery(e.target.value)}
-                    onFocus={() => setShowAllCompetences(true)}
-                    disabled={!selectedDiscipline}
-                />
-                {(searchQuery || showAllCompetences) && (
-                    <div className={attributes["search-results"]}>
-                        {competenceOptions
-                            .filter(
-                                (option) =>
-                                    !selectedDiscipline?.competenceCodes.includes(option) &&
-                                    (searchQuery ? option.includes(searchQuery) : true)
-                            )
-                            .map((option) => (
-                                <div key={option} onClick={() => handleAddCompetence(option)}>
-                                    {option}
-                                    <span className={attributes["add-symbol"]}>+</span>
-                                </div>
-                            ))}
-                    </div>
+                {loadingControlTypes ? (
+                    <option>Загрузка...</option>
+                ) : (
+                    controlTypes.map((type) => (
+                        <option key={type.id} value={type.id}>
+                            {type.name}
+                        </option>
+                    ))
                 )}
-            </div>
-            <div className={attributes["competence-bricks"]}>
-                {selectedDiscipline?.competenceCodes.sort().map((code) => (
-                    <div key={code} onClick={() => handleRemoveCompetence(code)}>
-                        {code}
-                    </div>
-                ))}
-            </div>
+            </select>
 
-            <label>Часы по лекционным</label>
+            <label>Часы лекционные</label>
             <input
                 type="number"
                 className={isInvalidHours ? attributes.invalid : ""}
@@ -240,7 +200,17 @@ export const AttributesPanel = ({
                 min="0"
             />
 
-            <label>Часы по лабораторным</label>
+            <label>Часы практические</label>
+            <input
+                type="number"
+                className={isInvalidHours ? attributes.invalid : ""}
+                value={selectedDiscipline?.practicalHours ?? 0}
+                onChange={(e) => handleNumberChange("practicalHours", e.target.value)}
+                disabled={!selectedDiscipline}
+                min="0"
+            />
+
+            <label>Часы лабораторные</label>
             <input
                 type="number"
                 className={isInvalidHours ? attributes.invalid : ""}
@@ -250,14 +220,33 @@ export const AttributesPanel = ({
                 min="0"
             />
 
-            <label>Часы по практическим</label>
+            <label>Зачётные единицы</label>
             <input
                 type="number"
-                className={isInvalidHours ? attributes.invalid : ""}
-                value={selectedDiscipline?.practicalHours ?? 0}
-                onChange={(e) => handleNumberChange("practicalHours", e.target.value)}
+                className={isInvalidCredits ? attributes.invalid : ""}
+                value={selectedDiscipline?.credits ?? 1}
+                onChange={(e) => handleNumberChange("credits", e.target.value, 1)}
                 disabled={!selectedDiscipline}
-                min="0"
+                min="1"
+                max="10"
+            />
+
+            <label>Семестр</label>
+            <input
+                type="number"
+                value={selectedDiscipline?.semester ?? 1}
+                onChange={(e) => handleNumberChange("semester", e.target.value, 1)}
+                disabled={!selectedDiscipline}
+                min="1"
+                max="30"
+            />
+
+            <label>Ядро</label>
+            <input
+                type="text"
+                value={selectedDiscipline?.core ?? ""}
+                onChange={(e) => handleAttributeChange("core", e.target.value)}
+                disabled={!selectedDiscipline}
             />
         </aside>
     );

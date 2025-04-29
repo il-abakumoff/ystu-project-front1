@@ -156,6 +156,8 @@ const Home = () => {
 
 
   const checkStudyPlan = () => {
+    console.log(rows)
+
     fetch('http://host.docker.internal:8000/validations/validate-up', {
       method: 'POST',
       headers: {
@@ -213,35 +215,6 @@ const Home = () => {
                 handleMouseDown={handleMouseDown}
                 handleResizeMouseDown={handleResizeMouseDown}
           />
-            
-            // <div
-            //     ref={tabRef}
-            //     className={errorWindow["validation-tab"]}
-            //     style={{
-            //       left: `${position.x}px`,
-            //       top: `${position.y}px`,
-            //       width: `${size.width}px`,
-            //       height: `${size.height}px`,
-            //       cursor: 'grab'
-            //     }}
-            //     onMouseDown={handleMouseDown}>
-            //   <button
-            //       onClick={(e) => {
-            //         e.stopPropagation();
-            //         setShowValidationTab(false);
-            //       }}
-            //       className={errorWindow["close-tab-button"]}
-            //   >×
-            //   </button>
-            //   <h3>Результаты проверки</h3>
-            //   <div className={errorWindow["tab-content"]}>
-            //     <pre>{validationResult}</pre>
-            //   </div>
-            //   <div
-            //       className={errorWindow["resize-handle"]}
-            //       onMouseDown={handleResizeMouseDown}
-            //   />
-            // </div>
         )}
 
         <div className={table["content-wrapper"]}>
