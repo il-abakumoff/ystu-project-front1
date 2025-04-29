@@ -201,3 +201,10 @@
 .resize-handle:active {
   background-color: rgba(0, 0, 0, 0.2);
 }
+
+.errorMessage {
+  color: red;
+  font-size: 0.8em;
+  margin-top: -0.5em;
+  margin-bottom: 0.5em;
+}

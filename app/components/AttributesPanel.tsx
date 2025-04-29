@@ -40,6 +40,58 @@ export const AttributesPanel = ({
     const [panelWidth, setPanelWidth] = useState(300);
     const [controlTypes, setControlTypes] = useState<ControlType[]>([]);
     const [loadingControlTypes, setLoadingControlTypes] = useState(false);
+    const [creditsError, setCreditsError] = useState<string | null>(null);
+
+    const handleNumberChange = (
+        field: keyof Discipline,
+        value: string,
+        min: number = 0
+    ) => {
+        const numericValue = Number(value);
+        const finalValue = isNaN(numericValue) ? min : Math.max(numericValue, min);
+        handleAttributeChange(field, finalValue);
+    };
+
+    const startResizing = (e: React.MouseEvent) => {
+        e.preventDefault();
+        setIsResizing(true);
+    };
+
+    const calculateCredits = (lecture: number, practical: number, lab: number) => {
+        const totalHours = lecture + practical + lab;
+        const calculatedCredits = Math.floor(totalHours / 36);
+        const exactValue = totalHours / 36;
+
+        if (totalHours <= 0) {
+            setCreditsError("Общее количество часов должно быть больше 0");
+            return false;
+        } else if (totalHours % 36 !== 0) {
+            setCreditsError(`Зачетные единицы рассчитаны как ${calculatedCredits} (${exactValue.toFixed(2)} до округления)`);
+            return false;
+        } else {
+            setCreditsError(null);
+            return true;
+        }
+    };
+
+    const handleHoursChange = (field: keyof Discipline, value: string) => {
+        if (!selectedDiscipline) return;
+
+        const numericValue = Number(value);
+        const finalValue = isNaN(numericValue) ? 0 : Math.max(numericValue, 0);
+
+        handleAttributeChange(field, finalValue);
+
+        const lecture = field === 'lectureHours' ? finalValue : selectedDiscipline.lectureHours;
+        const practical = field === 'practicalHours' ? finalValue : selectedDiscipline.practicalHours;
+        const lab = field === 'labHours' ? finalValue : selectedDiscipline.labHours;
+
+        const isValid = calculateCredits(lecture, practical, lab);
+        if (isValid) {
+            const newCredits = Math.floor((lecture + practical + lab) / 36);
+            handleAttributeChange('credits', newCredits);
+        }
+    };
 
     useEffect(() => {
         const fetchControlTypes = async () => {
@@ -60,21 +112,6 @@ export const AttributesPanel = ({
 
         fetchControlTypes();
     }, []);
-
-    const handleNumberChange = (
-        field: keyof Discipline,
-        value: string,
-        min: number = 0
-    ) => {
-        const numericValue = Number(value);
-        const finalValue = isNaN(numericValue) ? min : Math.max(numericValue, min);
-        handleAttributeChange(field, finalValue);
-    };
-
-    const startResizing = (e: React.MouseEvent) => {
-        e.preventDefault();
-        setIsResizing(true);
-    };
 
     useEffect(() => {
         const handleMouseMove = (e: MouseEvent) => {
@@ -118,13 +155,20 @@ export const AttributesPanel = ({
         };
     }, []);
 
-    const isInvalidCredits = selectedDiscipline
-        ? selectedDiscipline.credits >= 10 || selectedDiscipline.credits <= 0
-        : false;
+    useEffect(() => {
+        if (selectedDiscipline) {
+            const { lectureHours, labHours, practicalHours } = selectedDiscipline;
+            calculateCredits(lectureHours, labHours, practicalHours);
+        } else {
+            setCreditsError(null);
+        }
+    }, [selectedDiscipline]); // Зависимость от selectedDiscipline
 
     const isInvalidHours = selectedDiscipline
         ? selectedDiscipline.lectureHours + selectedDiscipline.labHours + selectedDiscipline.practicalHours <= 0
         : false;
+
+    const isInvalidCredits = false;
 
     const isInvalidCompetences = selectedDiscipline
         ? selectedDiscipline.competenceCodes.length === 0
@@ -195,7 +239,7 @@ export const AttributesPanel = ({
                 type="number"
                 className={isInvalidHours ? attributes.invalid : ""}
                 value={selectedDiscipline?.lectureHours ?? 0}
-                onChange={(e) => handleNumberChange("lectureHours", e.target.value)}
+                onChange={(e) => handleHoursChange("lectureHours", e.target.value)}
                 disabled={!selectedDiscipline}
                 min="0"
             />
@@ -205,7 +249,7 @@ export const AttributesPanel = ({
                 type="number"
                 className={isInvalidHours ? attributes.invalid : ""}
                 value={selectedDiscipline?.practicalHours ?? 0}
-                onChange={(e) => handleNumberChange("practicalHours", e.target.value)}
+                onChange={(e) => handleHoursChange("practicalHours", e.target.value)}
                 disabled={!selectedDiscipline}
                 min="0"
             />
@@ -215,7 +259,7 @@ export const AttributesPanel = ({
                 type="number"
                 className={isInvalidHours ? attributes.invalid : ""}
                 value={selectedDiscipline?.labHours ?? 0}
-                onChange={(e) => handleNumberChange("labHours", e.target.value)}
+                onChange={(e) => handleHoursChange("labHours", e.target.value)}
                 disabled={!selectedDiscipline}
                 min="0"
             />
@@ -223,13 +267,26 @@ export const AttributesPanel = ({
             <label>Зачётные единицы</label>
             <input
                 type="number"
-                className={isInvalidCredits ? attributes.invalid : ""}
+                className={creditsError ? attributes.invalid : ""}
                 value={selectedDiscipline?.credits ?? 1}
-                onChange={(e) => handleNumberChange("credits", e.target.value, 1)}
+                onChange={(e) => {
+                    const value = Math.max(1, Math.min(10, Number(e.target.value)));
+                    handleAttributeChange("credits", value);
+                    // Перепроверяем часы после ручного изменения ЗЕ
+                    if (selectedDiscipline) {
+                        const { lectureHours, labHours, practicalHours } = selectedDiscipline;
+                        calculateCredits(lectureHours, labHours, practicalHours);
+                    }
+                }}
                 disabled={!selectedDiscipline}
                 min="1"
                 max="10"
             />
+            {creditsError && (
+                <div className={attributes.errorMessage}>
+                    {creditsError}
+                </div>
+            )}
 
             <label>Семестр</label>
             <input
