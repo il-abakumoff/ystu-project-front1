@@ -8,13 +8,6 @@ import { CompetenciesSetting } from "@/app/components/CompetenciesSetting";
 interface AttributesPanelProps {
     selectedDiscipline: Discipline | null;
     handleAttributeChange: (field: keyof Discipline, value: any) => void;
-    competenceOptions: string[];
-    handleAddCompetence: (competence: string) => void;
-    handleRemoveCompetence: (competence: string) => void;
-    searchQuery: string;
-    setSearchQuery: React.Dispatch<React.SetStateAction<string>>;
-    showAllCompetences: boolean;
-    setShowAllCompetences: React.Dispatch<React.SetStateAction<boolean>>;
     onClose: () => void;
 }
 
@@ -26,13 +19,6 @@ interface ControlType {
 export const AttributesPanel = ({
                                     selectedDiscipline,
                                     handleAttributeChange,
-                                    competenceOptions,
-                                    handleAddCompetence,
-                                    handleRemoveCompetence,
-                                    searchQuery,
-                                    setSearchQuery,
-                                    showAllCompetences,
-                                    setShowAllCompetences,
                                     onClose,
                                 }: AttributesPanelProps) => {
     const searchInputRef = useRef<HTMLDivElement>(null);
@@ -140,22 +126,6 @@ export const AttributesPanel = ({
             window.removeEventListener('mouseup', handleMouseUp);
         };
     }, [isResizing]);
-
-    useEffect(() => {
-        const handleClickOutside = (event: MouseEvent) => {
-            if (
-                searchInputRef.current &&
-                !searchInputRef.current.contains(event.target as Node)
-            ) {
-                setShowAllCompetences(false);
-            }
-        };
-
-        document.addEventListener("mousedown", handleClickOutside);
-        return () => {
-            document.removeEventListener("mousedown", handleClickOutside);
-        };
-    }, []);
 
     useEffect(() => {
         if (selectedDiscipline) {

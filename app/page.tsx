@@ -23,10 +23,18 @@ import { useTableState } from "@/app/hooks/useTableState";
 import { useAlert } from "@/app/hooks/useAlert";
 import { useDragAndDrop } from "@/app/hooks/useDragAndDrop";
 import { useDiscDelete } from "./hooks/useDiscDelete";
-import { useCompetences } from "@/app/hooks/useCompetences";
 import { useModals } from "@/app/hooks/useModals";
+import { useFileOperations } from "@/app/hooks/useFileOperations";
 
 const Home = () => {
+  const {
+    showFileMenu,
+    toggleFileMenu,
+    showInitialModal,
+    openInitialModal,
+    closeInitialModal,
+  } = useFileOperations();
+
   const {
     columns,
     rows,
@@ -54,16 +62,6 @@ const Home = () => {
   );
 
   const { handleDisciplineDelete } = useDiscDelete(rows, setRows, disciplines);
-
-  const {
-    searchQuery,
-    showAllCompetences,
-    competenceOptions,
-    setSearchQuery,
-    setShowAllCompetences,
-    handleAddCompetence,
-    handleRemoveCompetence,
-  } = useCompetences(selectedDiscipline, handleAttributeChange);
 
   const { initialModal, coreModal, handleInitialModalClose } =
       useModals(setColumns);
@@ -161,12 +159,6 @@ const Home = () => {
         })
   };
 
-  const handleTableDisciplineClick = (discipline: Discipline) => {
-    const actualDiscipline = disciplines.find((d) => d.id === discipline.id) || discipline;
-    setSelectedDiscipline(actualDiscipline);
-    setIsAttributesPanelVisible(true);
-  };
-
   useEffect(() => {
     if (isDragging || isResizing) {
       window.addEventListener('mousemove', handleMouseMove);
@@ -181,6 +173,11 @@ const Home = () => {
     };
   }, [isDragging, isResizing]);
 
+  const handleSaveClick = () => {
+    console.log("Save clicked");
+    toggleFileMenu();
+  };
+
   return (
     <div className={container["container"]}>
       <Head>
@@ -189,11 +186,19 @@ const Home = () => {
 
       <Alert message={alertMessage} onClose={closeAlert} />
 
-      {initialModal.isOpen && (
-        <InitialModal handleInitialModalClose={handleInitialModalClose} />
+      {showInitialModal && (
+          <InitialModal
+              handleInitialModalClose={handleInitialModalClose}
+              onClose={() => closeInitialModal()} // Добавляем эту строку
+          />
       )}
 
-      <Header />
+      <Header
+          onFileClick={toggleFileMenu}
+          onNewOpenClick={openInitialModal}
+          onSaveClick={handleSaveClick}
+          showFileMenu={showFileMenu}
+      />
 
       <div className={mainContent["main-content"]}>
         <Sidebar
@@ -238,13 +243,6 @@ const Home = () => {
           <AttributesPanel
             selectedDiscipline={selectedDiscipline}
             handleAttributeChange={handleAttributeChange}
-            competenceOptions={competenceOptions}
-            handleAddCompetence={handleAddCompetence}
-            handleRemoveCompetence={handleRemoveCompetence}
-            searchQuery={searchQuery}
-            setSearchQuery={setSearchQuery}
-            showAllCompetences={showAllCompetences}
-            setShowAllCompetences={setShowAllCompetences}
             onClose={() => setIsAttributesPanelVisible(false)}
           />
         )}
