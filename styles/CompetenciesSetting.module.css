@@ -1,0 +1,270 @@
+/* CompetenciesSetting.module.css */
+
+.modalBackdrop {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.2);
+    backdrop-filter: blur(30px);
+    z-index: 999;
+}
+
+.modal {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: white;
+    padding: 20px;
+    border: 1px solid #ccc;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    z-index: 1000;
+    width: 900px;
+    max-width: 90vw;
+    max-height: 90vh;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+}
+
+.modalHeader {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid #eee;
+}
+
+.closeButton {
+    background: none;
+    border: none;
+    font-size: 1.5rem;
+    cursor: pointer;
+    padding: 0 10px;
+    color: #666;
+}
+
+.closeButton:hover {
+    color: #333;
+}
+
+.errorMessage {
+    color: #d32f2f;
+    background-color: #fdecea;
+    padding: 10px;
+    margin-bottom: 15px;
+    border-radius: 4px;
+    border-left: 4px solid #d32f2f;
+}
+
+.contentContainer {
+    display: flex;
+    flex: 1;
+    gap: 15px;
+    margin-top: 15px;
+    min-height: 0;
+}
+
+.competenciesColumn {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    overflow: hidden;
+    min-width: 250px;
+    min-height: 0;
+}
+
+.searchContainer {
+    padding: 10px;
+    background: #e1e1e1;
+    border-bottom: 1px solid #ddd;
+}
+
+.groupSelect {
+    width: 100%;
+    padding: 8px 12px;
+    margin-bottom: 10px;
+    border: 1px solid #c5c5c5;
+    border-radius: 4px;
+    font-size: 14px;
+}
+
+.groupSelect:focus {
+    outline: none;
+    border-color: #4a90e2;
+    box-shadow: 0 0 0 2px rgba(74, 144, 226, 0.2);
+}
+
+.searchInput {
+    width: 10%;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-size: 14px;
+}
+
+.searchInput:focus,
+
+.itemsList {
+    flex: 1;
+    overflow-y: auto;
+    min-height: 0;
+}
+
+.competenceItem {
+    padding: 10px 12px;
+    border-bottom: 1px solid #eee;
+    cursor: pointer;
+    transition: background-color 0.2s;
+    font-size: 14px;
+    white-space: nowrap; /* Текст в одну строку */
+    overflow: hidden;
+    text-overflow: ellipsis; /* Многоточие если текст не помещается */
+}
+
+.competenceItem.selected {
+    background-color: #eaf0f8;
+}
+
+.competenceItem:hover {
+    background-color: #eaeaea;
+}
+
+.competenceCode {
+    font-weight: bold;
+    margin-bottom: 3px;
+}
+
+.competenceName {
+    color: #555;
+}
+
+.groupHeader {
+    padding: 10px 12px;
+    background-color: #d8dcfc;
+    font-weight: bold;
+    border-top: 1px solid #b7b7b7;
+}
+
+.descriptionColumn {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    padding: 15px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    overflow-y: auto;
+    min-height: 0;
+}
+
+/* Стиль для описания в правой панели */
+.descriptionContent {
+    min-height: 400px; /* Фиксированная высота */
+    max-height: 400px;
+    overflow-y: auto; /* Прокрутка при переполнении */
+    word-wrap: break-word; /* Перенос слов */
+    white-space: pre-wrap; /* Сохранять переносы строк */
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+}
+
+/* Убираем margin у параграфов в описании */
+.descriptionContent p {
+    margin: 5px 0;
+}
+
+.emptyState {
+    padding: 30px 20px;
+    text-align: center;
+    color: #666;
+    font-style: italic;
+}
+
+.actionsContainer {
+    display: flex;
+    gap: 10px;
+    margin-top: 20px;
+    padding-top: 15px;
+    border-top: 1px solid #eee;
+}
+
+.actionButton {
+    padding: 10px 20px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 14px;
+    transition: background-color 0.2s;
+}
+
+.saveButton {
+    background-color: #4caf50;
+    color: white;
+}
+
+.saveButton:hover {
+    background-color: #3d8b40;
+}
+
+.saveButton:disabled {
+    background-color: #a5d6a7;
+    cursor: not-allowed;
+}
+
+.cancelButton {
+    background-color: #666;
+    color: white;
+}
+
+.cancelButton:hover {
+    background-color: #555;
+}
+
+.cancelButton:disabled {
+    background-color: #999;
+    cursor: not-allowed;
+}
+
+.loadingSpinner {
+    width: 20px;
+    height: 20px;
+    margin-left: 10px;
+    border: 3px solid rgba(0, 0, 0, 0.1);
+    border-radius: 50%;
+    border-top-color: #2196F3;
+    animation: spin 1s linear infinite;
+    opacity: 0;
+    transition: opacity 0.3s;
+}
+
+.loadingSpinner.active {
+    opacity: 1;
+}
+
+@keyframes spin {
+    to { transform: rotate(360deg); }
+}
+
+/* Стили для скроллбара */
+.itemsList::-webkit-scrollbar {
+    width: 8px;
+}
+
+.itemsList::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 4px;
+}
+
+.itemsList::-webkit-scrollbar-thumb {
+    background: #bdbdbd;
+    border-radius: 4px;
+}
+
+.itemsList::-webkit-scrollbar-thumb:hover {
+    background: #9e9e9e;
+}

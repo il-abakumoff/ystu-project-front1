@@ -57,6 +57,7 @@ export const useDragAndDrop = (
 
     setRows(updatedRows);
     setDraggedDiscipline(null);
+    console.log(rowIndex + " " + colIndex)
   };
 
   return {

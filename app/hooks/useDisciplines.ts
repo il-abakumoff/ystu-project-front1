@@ -21,18 +21,72 @@ export const useDisciplines = (setRows: (rows: any) => void) => {
 
         const data = await response.json();
 
-        const disciplinesWithDefaults = data.map((discipline: Partial<Discipline>) => ({
-          credits: 1,
-          examType: "Э",
-          hasCourseWork: false,
-          hasPracticalWork: false,
-          department: "ИСТ",
-          competenceCodes: [],
-          lectureHours: 1,
-          labHours: 1,
-          practicalHours: 1,
-          ...discipline,
-        }));
+        // Кэш для хранения данных о кафедрах
+        const departmentCache = new Map<number, {short_name: string, name: string}>();
+
+        // Функция для получения данных кафедры
+        const fetchDepartmentData = async (departmentId: number) => {
+          try {
+            // Проверяем кэш
+            if (departmentCache.has(departmentId)) {
+              return departmentCache.get(departmentId)!;
+            }
+
+            const response = await fetch(`http://host.docker.internal:8000/departments/${departmentId}/`);
+            if (!response.ok) {
+              return {
+                short_name: "ИСТ",
+                name: "Информационные системы и технологии" // Значение по умолчанию
+              };
+            }
+
+            const department = await response.json();
+            const departmentData = {
+              short_name: department.short_name || "ИСТ",
+              name: department.name || "Информационные системы и технологии"
+            };
+
+            // Сохраняем в кэш
+            departmentCache.set(departmentId, departmentData);
+            return departmentData;
+          } catch (error) {
+            console.error('Ошибка получения кафедры:', error);
+            return {
+              short_name: "ИСТ",
+              name: "Информационные системы и технологии"
+            };
+          }
+        };
+
+        // Обрабатываем дисциплины асинхронно
+        const disciplinesWithDefaults = await Promise.all(
+            data.map(async (discipline: Partial<Discipline>) => {
+              let departmentData = {
+                short_name: "ИСТ",
+                name: "Информационные системы и технологии"
+              };
+
+              if (discipline.department_id) {
+                departmentData = await fetchDepartmentData(discipline.department_id);
+              }
+
+              return {
+                credits: 1,
+                examType: "Э",
+                hasCourseWork: false,
+                hasPracticalWork: false,
+                department_id: discipline.department_id,
+                department_short_name: departmentData.short_name,
+                department_name: departmentData.name, // Добавляем полное название
+                competenceCodes: [],
+                lectureHours: 1,
+                labHours: 1,
+                practicalHours: 1,
+                ...discipline,
+              };
+            })
+        );
+
         setDisciplines(disciplinesWithDefaults);
       } catch (err) {
         console.error('Ошибка получения дисциплин: ', err);

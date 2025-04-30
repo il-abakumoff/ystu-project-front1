@@ -73,7 +73,6 @@ const Home = () => {
   const [validationResult, setValidationResult] = useState<string>("");
   const [showValidationTab, setShowValidationTab] = useState(false);
 
-  // перемещение окна с результатами ошибок и ресайз
   const [position, setPosition] = useState({ x: 150, y: 150 });
   const [size, setSize] = useState({ width: 400, height: 500 });
   const [isDragging, setIsDragging] = useState(false);
@@ -83,7 +82,6 @@ const Home = () => {
   const resizeStartSize = useRef({ width: 0, height: 0 });
   const resizeStartPos = useRef({ x: 0, y: 0 });
 
-
   const handleDisciplineClick = (discipline: Discipline) => {
     const actualDiscipline =
       disciplines.find((d) => d.id === discipline.id) || discipline;
@@ -91,7 +89,6 @@ const Home = () => {
     setIsAttributesPanelVisible(true);
   };
 
-  // перемещение окна
   const handleMouseDown = (e: React.MouseEvent) => {
     if (e.button !== 0 || (e.target as HTMLElement).className.includes('resize-handle')) return;
     setIsDragging(true);
@@ -128,7 +125,6 @@ const Home = () => {
     }
   };
 
-  // Обработчик для изменения размера
   const handleResizeMouseDown = (e: React.MouseEvent) => {
     e.stopPropagation();
     setIsResizing(true);
@@ -139,23 +135,9 @@ const Home = () => {
     }
   };
 
-
-  useEffect(() => {
-    if (isDragging || isResizing) {
-      window.addEventListener('mousemove', handleMouseMove);
-      window.addEventListener('mouseup', handleMouseUp);
-    } else {
-      window.removeEventListener('mousemove', handleMouseMove);
-      window.removeEventListener('mouseup', handleMouseUp);
-    }
-    return () => {
-      window.removeEventListener('mousemove', handleMouseMove);
-      window.removeEventListener('mouseup', handleMouseUp);
-    };
-  }, [isDragging, isResizing]);
-
-
   const checkStudyPlan = () => {
+    console.log(rows)
+
     fetch('http://host.docker.internal:8000/validations/validate-up', {
       method: 'POST',
       headers: {
@@ -179,6 +161,26 @@ const Home = () => {
         })
   };
 
+  const handleTableDisciplineClick = (discipline: Discipline) => {
+    const actualDiscipline = disciplines.find((d) => d.id === discipline.id) || discipline;
+    setSelectedDiscipline(actualDiscipline);
+    setIsAttributesPanelVisible(true);
+  };
+
+  useEffect(() => {
+    if (isDragging || isResizing) {
+      window.addEventListener('mousemove', handleMouseMove);
+      window.addEventListener('mouseup', handleMouseUp);
+    } else {
+      window.removeEventListener('mousemove', handleMouseMove);
+      window.removeEventListener('mouseup', handleMouseUp);
+    }
+    return () => {
+      window.removeEventListener('mousemove', handleMouseMove);
+      window.removeEventListener('mouseup', handleMouseUp);
+    };
+  }, [isDragging, isResizing]);
+
   return (
     <div className={container["container"]}>
       <Head>
@@ -198,7 +200,6 @@ const Home = () => {
           checkStudyPlan={checkStudyPlan}
           disciplines={disciplines}
           selectedDiscipline={selectedDiscipline}
-          handleDisciplineClick={handleDisciplineClick}
           handleDragStart={handleDragStart}
         />
 
@@ -213,35 +214,6 @@ const Home = () => {
                 handleMouseDown={handleMouseDown}
                 handleResizeMouseDown={handleResizeMouseDown}
           />
-            
-            // <div
-            //     ref={tabRef}
-            //     className={errorWindow["validation-tab"]}
-            //     style={{
-            //       left: `${position.x}px`,
-            //       top: `${position.y}px`,
-            //       width: `${size.width}px`,
-            //       height: `${size.height}px`,
-            //       cursor: 'grab'
-            //     }}
-            //     onMouseDown={handleMouseDown}>
-            //   <button
-            //       onClick={(e) => {
-            //         e.stopPropagation();
-            //         setShowValidationTab(false);
-            //       }}
-            //       className={errorWindow["close-tab-button"]}
-            //   >×
-            //   </button>
-            //   <h3>Результаты проверки</h3>
-            //   <div className={errorWindow["tab-content"]}>
-            //     <pre>{validationResult}</pre>
-            //   </div>
-            //   <div
-            //       className={errorWindow["resize-handle"]}
-            //       onMouseDown={handleResizeMouseDown}
-            //   />
-            // </div>
         )}
 
         <div className={table["content-wrapper"]}>
@@ -277,6 +249,8 @@ const Home = () => {
           />
         )}
       </div>
+
+      {<button onClick={(e) => console.log(rows)}>кликкк</button>}
 
       {coreModal.isOpen && (
         <CoreModal

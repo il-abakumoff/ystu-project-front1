@@ -4,7 +4,6 @@ import React, { useState } from "react";
 import header from "@/styles/Header.module.css";
 import { ReferenceForm } from "./ReferenceForm";
 
-
 export const Header = () => {
     const [showReferences, setShowReferences] = useState(false);
 
