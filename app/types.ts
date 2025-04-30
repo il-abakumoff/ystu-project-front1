@@ -6,8 +6,10 @@ export interface Discipline {
   examTypeId?: number; // Добавляем для хранения ID
   hasCourseWork: boolean;
   hasPracticalWork: boolean;
-  department: string;
-  competenceCodes: string[];
+  department_name: string;
+  department_id: number;
+  department_short_name: string;
+  competenceCodes: number[];
   lectureHours: number;
   labHours: number;
   practicalHours: number;

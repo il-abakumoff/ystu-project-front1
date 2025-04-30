@@ -21,6 +21,8 @@ interface ReferenceConfig {
     name: string;
     path: string;
     displayName: string;
+    listField?: string;
+    titleField?: string;
     fields: ReferenceField[];
 }
 
@@ -29,8 +31,17 @@ const REFERENCES_CONFIG: ReferenceConfig[] = [
         name: 'competence',
         path: '/competencies',
         displayName: 'Компетенции',
+        listField: 'code',
+        titleField: 'code',
         fields: [
-            {key: 'name', label: 'Название'}
+            {key: 'code', label: 'Код компетенции'},
+            {key: 'name', label: 'Описание'},
+            {
+                key: 'competency_group_id',
+                label: 'Группа компетенций',
+                type: 'select',
+                reference: 'competency-group' // Указываем, что поле ссылается на справочник department
+            }
         ]
     },
     {
@@ -82,7 +93,8 @@ const REFERENCES_CONFIG: ReferenceConfig[] = [
         path: '/departments',
         displayName: 'Кафедры',
         fields: [
-            {key: 'name', label: 'Название'}
+            {key: 'name', label: 'Название'},
+            {key: 'short_name', label: 'Краткое название'}
         ]
     },
     {
@@ -460,14 +472,19 @@ export const ReferenceForm = ({onClose}: { onClose: () => void }) => {
                                         className={`${styles["item"]} ${selectedItem?.id === item.id ? styles["selected"] : ""}`}
                                         onClick={() => handleItemClick(item)}
                                     >
-                                        {item.name}
+                                        {item[selectedReference?.listField || 'name']}
                                     </div>
                                 ))}
                             </div>
                         </div>
 
                         <div className={styles["fields-container"]}>
-                            <h4>{selectedItem ? `${selectedItem.name}` : 'Новый элемент'}</h4>
+                            <h4>
+                                {selectedItem
+                                    ? `${selectedItem[selectedReference?.titleField || 'name']}`
+                                    : 'Новый элемент'
+                                }
+                            </h4>
 
                             {selectedReference.fields.map(field => (
                                 <div key={field.key} className={styles["field-group"]}>

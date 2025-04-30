@@ -20,10 +20,10 @@ export const DisciplineItem = ({
                                    isActive = false,
                                }: DisciplineItemProps) => {
     const isInvalid =
-        discipline.credits >= 10 ||
+        discipline.credits > 10 ||
         discipline.lectureHours + discipline.labHours + discipline.practicalHours <= 0 ||
         discipline.competenceCodes.length === 0 ||
-        !discipline.department;
+        !discipline.department_name;
 
     return (
         <div
@@ -41,7 +41,7 @@ export const DisciplineItem = ({
             <div className={table.disciplineInfo}>
                 <span className={table.disciplineInfoItem}> {discipline.examType} </span>
                 <span className={table.disciplineInfoItem}> {discipline.credits} ЗЕ </span>
-                <span className={table.disciplineInfoItem}> {discipline.department} </span>
+                <span className={table.disciplineInfoItem}> {discipline.department_short_name} </span>
                 <span
                     className={table.deleteButton}
                     onClick={deleteDisc}

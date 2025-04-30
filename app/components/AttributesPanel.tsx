@@ -3,6 +3,7 @@
 import React, {useEffect, useRef, useState} from "react";
 import attributes from "@/styles/Attributes.module.css";
 import {Discipline} from "@/app/types";
+import { CompetenciesSetting } from "@/app/components/CompetenciesSetting";
 
 interface AttributesPanelProps {
     selectedDiscipline: Discipline | null;
@@ -41,6 +42,7 @@ export const AttributesPanel = ({
     const [controlTypes, setControlTypes] = useState<ControlType[]>([]);
     const [loadingControlTypes, setLoadingControlTypes] = useState(false);
     const [creditsError, setCreditsError] = useState<string | null>(null);
+    const [showCompetenciesModal, setShowCompetenciesModal] = useState(false);
 
     const handleNumberChange = (
         field: keyof Discipline,
@@ -175,12 +177,12 @@ export const AttributesPanel = ({
         : false;
 
     const isInvalidDepartment = selectedDiscipline
-        ? !selectedDiscipline.department
+        ? !selectedDiscipline.department_name
         : false;
 
     const getShortExamType = (name: string): string => {
         if (!name) return '';
-        // Берем первый символ и делаем заглавным
+        if (name.toLowerCase().replaceAll("ё", "е") == 'дифференцированный зачет') return 'ДЗ'
         return name.charAt(0).toUpperCase();
     };
 
@@ -274,7 +276,7 @@ export const AttributesPanel = ({
                     handleAttributeChange("credits", value);
                     // Перепроверяем часы после ручного изменения ЗЕ
                     if (selectedDiscipline) {
-                        const { lectureHours, labHours, practicalHours } = selectedDiscipline;
+                        const {lectureHours, labHours, practicalHours} = selectedDiscipline;
                         calculateCredits(lectureHours, labHours, practicalHours);
                     }
                 }}
@@ -288,23 +290,33 @@ export const AttributesPanel = ({
                 </div>
             )}
 
-            <label>Семестр</label>
-            <input
-                type="number"
-                value={selectedDiscipline?.semester ?? 1}
-                onChange={(e) => handleNumberChange("semester", e.target.value, 1)}
+            <button
+                className={attributes["competencies-button"]}
+                onClick={() => setShowCompetenciesModal(true)}
                 disabled={!selectedDiscipline}
-                min="1"
-                max="30"
-            />
+            >
+                Компетенции
+            </button>
 
-            <label>Ядро</label>
-            <input
-                type="text"
-                value={selectedDiscipline?.core ?? ""}
-                onChange={(e) => handleAttributeChange("core", e.target.value)}
-                disabled={!selectedDiscipline}
-            />
+            {showCompetenciesModal && (
+                <CompetenciesSetting
+                    initialCompetenceIds={selectedDiscipline?.competenceCodes || []}
+                    onSave={(competenceIds) => {
+                        handleAttributeChange('competenceCodes', competenceIds);
+                        setShowCompetenciesModal(false);
+                    }}
+                    onClose={() => setShowCompetenciesModal(false)}
+                />
+            )}
+
+            {<button
+                className={attributes["competencies-button"]}
+                onClick={(e) => {
+                    console.log(selectedDiscipline)
+                }}>
+                Info (console out)
+            </button>}
+
         </aside>
     );
 };

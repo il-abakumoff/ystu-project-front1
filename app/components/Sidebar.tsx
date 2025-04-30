@@ -7,16 +7,16 @@ interface SidebarProps {
     checkStudyPlan: () => void;
     disciplines: any[];
     selectedDiscipline: any;
-    handleDisciplineClick: (discipline: any) => void;
     handleDragStart: (discipline: any) => void;
+    // handleTableDisciplineClick: (discipline: any) => void;
 }
 
 export const Sidebar = ({
                             checkStudyPlan,
                             disciplines,
                             selectedDiscipline,
-                            handleDisciplineClick,
                             handleDragStart,
+                            // handleTableDisciplineClick,
                         }: SidebarProps) => {
     const [searchTerm, setSearchTerm] = useState("");
     const [sortAscending, setSortAscending] = useState(true);
@@ -112,10 +112,8 @@ export const Sidebar = ({
                         key={discipline.id}
                         draggable
                         onDragStart={() => handleDragStart(discipline)}
-                        onClick={() => handleDisciplineClick(discipline)}
-                        className={`${sidebar.draggableItem} ${
-                            selectedDiscipline?.id === discipline.id ? sidebar.selected : ""
-                        }`}
+                        // onDoubleClick={() => handleTableDisciplineClick(discipline)}
+                        className={sidebar.draggableItem} // Убираем проверку selected
                     >
                         {discipline.name}
                     </li>
