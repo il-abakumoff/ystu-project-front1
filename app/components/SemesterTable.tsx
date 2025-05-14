@@ -5,6 +5,7 @@ import table from "@/styles/Table.module.css";
 import {ConfirmationModal} from "@/app/components/ConfirmationModal";
 import {DisciplineItem} from "./DisciplineItem";
 import {Discipline, TableRow} from "@/app/types";
+import {red} from "next/dist/lib/picocolors";
 
 interface SemesterTableProps {
     columns: number;
@@ -113,7 +114,7 @@ export const SemesterTable = ({
                         ))}
                     </tr>
                 ))}
-                <tr>
+                <tr className={table.tr}>
                     <td>Общая сумма ЗЕ: {calculateTotalCredits()}</td>
                     {calculateColumnCredits().map((credits, colIndex) => (
                         <td key={colIndex}>{credits} ЗЕ</td>

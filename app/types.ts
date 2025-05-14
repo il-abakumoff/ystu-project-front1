@@ -8,7 +8,7 @@ export interface Discipline {
   hasPracticalWork: boolean;
   department_name: string;
   department_id: number;
-  department_short_name: string;
+  department: string;
   competenceCodes: number[];
   lectureHours: number;
   labHours: number;
@@ -22,7 +22,33 @@ export interface Discipline {
 }
 
 export interface TableRow {
+  id?: number;
   name: string;
   color: string;
   data: Discipline[][];
+}
+
+export interface EducationalLevel {
+  id: number;
+  name: string;
+}
+
+export interface EducationalForm {
+  id: number;
+  name: string;
+}
+
+export interface DirectionData {
+  id: number;
+  name: string;
+  level: string;
+  form: string;
+  semesters: number;
+}
+
+export interface InitialModalProps {
+  handleInitialModalClose: (data: DirectionData) => void;
+  onClose: () => void;
+  educationalLevels: EducationalLevel[];
+  educationalForms: EducationalForm[];
 }

@@ -1,36 +1,13 @@
 import { useState, useEffect } from "react";
 import { TableRow } from "@/app/types";
 
-export const useTableState = () => {
-  const [columns, setColumns] = useState(8);
+export const useTableState = (initialColumns = 8) => {
+  const [columns, setColumns] = useState(initialColumns);
   const [rows, setRows] = useState<TableRow[]>([]);
 
-  useEffect(() => {
-    const initialRows = [
-      {
-        name: "Ядро ЯГТУ",
-        color: "#F4F65B",
-        data: Array(columns)
-          .fill([])
-          .map(() => []),
-      },
-      {
-        name: "Ядро ИЦС",
-        color: "#9CF9A0",
-        data: Array(columns)
-          .fill([])
-          .map(() => []),
-      },
-      {
-        name: "Ядро УГСН",
-        color: "#7497FF",
-        data: Array(columns)
-          .fill([])
-          .map(() => []),
-      },
-    ];
-    setRows(initialRows);
-  }, [columns]);
+  const initializeTable = (semesters: number) => {
+    setColumns(semesters);
+  };
 
   useEffect(() => {
     setRows((prevRows) => {
@@ -76,16 +53,13 @@ export const useTableState = () => {
   };
 
   const addRow = () => {
-    const newCoreName =
-      (document.getElementById("newCoreName") as HTMLInputElement)?.value ||
-      "Новое ядро";
-    const newCoreColor =
-      (document.getElementById("newCoreColor") as HTMLInputElement)?.value ||
-      "#FFFFFF";
+    const newCoreName = (document.getElementById("newCoreName") as HTMLInputElement)?.value || "Новое ядро";
+    const newCoreColor = (document.getElementById("newCoreColor") as HTMLInputElement)?.value || "#FFFFFF";
 
     setRows((prev) => [
       ...prev,
       {
+        id: undefined, // Новое ядро
         name: newCoreName,
         color: newCoreColor,
         data: Array.from({ length: columns }, () => []),
@@ -93,15 +67,20 @@ export const useTableState = () => {
     ]);
   };
 
-  const handleRowDelete = (rowIndex: number) => {
+  const handleRowDelete = (rowIndex: number) =>   {
     setRows((prevRows) => prevRows.filter((_, index) => index !== rowIndex));
+  };
+
+  const loadCore = (coreData: TableRow) => {
+    setRows((prev) => [...prev, coreData]);
   };
 
   return {
     columns,
     rows,
-    setColumns: (newColumns: number) => setColumns(Math.max(1, newColumns)),
+    setColumns,
     setRows,
+    initializeTable, // Добавляем функцию инициализации
     calculateTotalCredits,
     calculateColumnCredits,
     addRow,

@@ -75,3 +75,25 @@
 .file-menu button:hover {
   background-color: #f5f5f5;
 }
+
+.file-menu {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  background: white;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+  z-index: 100;
+  display: flex;
+  flex-direction: column;
+  min-width: 150px;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.2s ease, visibility 0.2s ease;
+}
+
+.file-menu-container:hover .file-menu {
+  opacity: 1;
+  visibility: visible;
+}

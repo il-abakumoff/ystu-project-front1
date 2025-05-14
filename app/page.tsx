@@ -7,7 +7,6 @@ import mainContent from "@/styles/MainContent.module.css";
 import errorWindow from "@/styles/errorWindow.module.css";
 import table from "@/styles/Table.module.css";
 import modal from "@/styles/Modal.module.css";
-import { Discipline } from "@/app/types";
 import { Alert } from "@/app/components/Alert";
 import { InitialModal } from "@/app/components/InitialModal";
 import { Header } from "@/app/components/Header";
@@ -25,11 +24,19 @@ import { useDragAndDrop } from "@/app/hooks/useDragAndDrop";
 import { useDiscDelete } from "./hooks/useDiscDelete";
 import { useModals } from "@/app/hooks/useModals";
 import { useFileOperations } from "@/app/hooks/useFileOperations";
+import {
+  Discipline,
+  DirectionData,
+  EducationalLevel,
+  EducationalForm
+} from "@/app/types";
 
 const Home = () => {
+  const [currentDirection, setCurrentDirection] = useState<DirectionData | null>(null);
+  const [educationalLevels, setEducationalLevels] = useState<EducationalLevel[]>([]);
+  const [educationalForms, setEducationalForms] = useState<EducationalForm[]>([]);
+
   const {
-    showFileMenu,
-    toggleFileMenu,
     showInitialModal,
     openInitialModal,
     closeInitialModal,
@@ -40,11 +47,12 @@ const Home = () => {
     rows,
     setColumns,
     setRows,
+    initializeTable,
     calculateTotalCredits,
     calculateColumnCredits,
     addRow,
     handleRowDelete,
-  } = useTableState();
+  } = useTableState(currentDirection?.semesters || 8);
 
   const {
     disciplines,
@@ -63,8 +71,26 @@ const Home = () => {
 
   const { handleDisciplineDelete } = useDiscDelete(rows, setRows, disciplines);
 
-  const { initialModal, coreModal, handleInitialModalClose } =
+  const { initialModal, coreModal } =
       useModals(setColumns);
+
+  useEffect(() => {
+    const fetchReferences = async () => {
+      const [levelsRes, formsRes] = await Promise.all([
+        fetch('http://host.docker.internal:8000/educational-levels/'),
+        fetch('http://host.docker.internal:8000/educational-forms/')
+      ]);
+      if (levelsRes.ok) setEducationalLevels(await levelsRes.json());
+      if (formsRes.ok) setEducationalForms(await formsRes.json());
+    };
+    fetchReferences();
+  }, []);
+
+  const handleInitialModalClose = (directionData: DirectionData) => {
+    setCurrentDirection(directionData);
+    initializeTable(directionData.semesters);
+    closeInitialModal();
+  };
 
   const [isAttributesPanelVisible, setIsAttributesPanelVisible] = useState(true); //
 
@@ -175,7 +201,6 @@ const Home = () => {
 
   const handleSaveClick = () => {
     console.log("Save clicked");
-    toggleFileMenu();
   };
 
   return (
@@ -189,15 +214,20 @@ const Home = () => {
       {showInitialModal && (
           <InitialModal
               handleInitialModalClose={handleInitialModalClose}
-              onClose={() => closeInitialModal()} // Добавляем эту строку
+              onClose={closeInitialModal}
+              educationalLevels={educationalLevels}
+              educationalForms={educationalForms}
           />
       )}
 
       <Header
-          onFileClick={toggleFileMenu}
-          onNewOpenClick={openInitialModal}
-          onSaveClick={handleSaveClick}
-          showFileMenu={showFileMenu}
+          onNewOpenItemClick={openInitialModal}
+          onSaveItemClick={handleSaveClick}
+          directionInfo={
+            currentDirection
+                ? `${currentDirection.name}, ${currentDirection.level}, ${currentDirection.form}, ${currentDirection.semesters} сем.`
+                : undefined
+          }
       />
 
       <div className={mainContent["main-content"]}>
@@ -248,20 +278,35 @@ const Home = () => {
         )}
       </div>
 
-      {<button onClick={(e) => console.log(rows)}>кликкк</button>}
+      {<button onClick={(e) => {
+        console.log(rows)
+        console.log(currentDirection)
+      }}>
+        кликкк
+      </button>}
 
       {coreModal.isOpen && (
-        <CoreModal
-          closeCoreModal={(e) => {
-            if ((e.target as HTMLDivElement).className === modal.modal) {
-              coreModal.closeModal();
-            }
-          }}
-          addRow={() => {
-            addRow();
-            coreModal.closeModal();
-          }}
-        />
+          <CoreModal
+              closeCoreModal={(e) => {
+                  coreModal.closeModal();
+              }}
+              onAddExistingCore={(core) => {
+                setRows(prev => [...prev, {
+                  ...core,
+                  data: Array.from({ length: columns }, () => [])
+                }]);
+                coreModal.closeModal();
+              }}
+              onAddNewCore={(coreName) => {
+                setRows(prev => [...prev, {
+                  id: undefined, // Новое ядро без ID
+                  name: coreName,
+                  color: "#FFFFFF", // Цвет по умолчанию
+                  data: Array.from({ length: columns }, () => [])
+                }]);
+                coreModal.closeModal();
+              }}
+          />
       )}
     </div>
   );

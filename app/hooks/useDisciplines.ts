@@ -21,10 +21,8 @@ export const useDisciplines = (setRows: (rows: any) => void) => {
 
         const data = await response.json();
 
-        // Кэш для хранения данных о кафедрах
         const departmentCache = new Map<number, {short_name: string, name: string}>();
 
-        // Функция для получения данных кафедры
         const fetchDepartmentData = async (departmentId: number) => {
           try {
             // Проверяем кэш
@@ -46,7 +44,6 @@ export const useDisciplines = (setRows: (rows: any) => void) => {
               name: department.name || "Информационные системы и технологии"
             };
 
-            // Сохраняем в кэш
             departmentCache.set(departmentId, departmentData);
             return departmentData;
           } catch (error) {
@@ -58,7 +55,6 @@ export const useDisciplines = (setRows: (rows: any) => void) => {
           }
         };
 
-        // Обрабатываем дисциплины асинхронно
         const disciplinesWithDefaults = await Promise.all(
             data.map(async (discipline: Partial<Discipline>) => {
               let departmentData = {
@@ -76,7 +72,7 @@ export const useDisciplines = (setRows: (rows: any) => void) => {
                 hasCourseWork: false,
                 hasPracticalWork: false,
                 department_id: discipline.department_id,
-                department_short_name: departmentData.short_name,
+                department: departmentData.short_name,
                 department_name: departmentData.name, // Добавляем полное название
                 competenceCodes: [],
                 lectureHours: 1,

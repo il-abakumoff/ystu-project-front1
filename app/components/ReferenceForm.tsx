@@ -35,7 +35,8 @@ const REFERENCES_CONFIG: ReferenceConfig[] = [
         titleField: 'code',
         fields: [
             {key: 'code', label: 'Код компетенции'},
-            {key: 'name', label: 'Описание'},
+            {key: 'name', label: 'Название'},
+            {key: 'description', label: 'Описание'},
             {
                 key: 'competency_group_id',
                 label: 'Группа компетенций',

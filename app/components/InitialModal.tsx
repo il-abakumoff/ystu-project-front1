@@ -4,6 +4,12 @@ import React, {useEffect, useState} from "react";
 import modal from "@/styles/Modal.module.css";
 import modalContent from "@/styles/ModalContent.module.css";
 import sidebar from "@/styles/Sidebar.module.css";
+import {
+  DirectionData,
+  EducationalLevel,
+  EducationalForm,
+  InitialModalProps
+} from "@/app/types";
 
 interface Direction {
   id: number;
@@ -18,24 +24,11 @@ interface ReferenceItem {
   name: string;
 }
 
-interface InitialModalProps {
-  handleInitialModalClose: (semesters: number, directionId?: number) => void;
-  onClose: () => void;  // Добавляем
-}
-
-interface EducationalLevel {
-  id: number;
-  name: string;
-}
-
-interface EducationalForm {
-  id: number;
-  name: string;
-}
-
 export const InitialModal = ({
                                handleInitialModalClose,
                                onClose,
+                               educationalLevels,
+                               educationalForms
                              }: InitialModalProps) => {
   const [directions, setDirections] = useState<Direction[]>([]);
   const [selectedDirection, setSelectedDirection] = useState<Direction | null>(null);
@@ -48,28 +41,18 @@ export const InitialModal = ({
     semester_count: 8
   });
   const [error, setError] = useState<string | null>(null);
-  const [educationalLevels, setEducationalLevels] = useState<EducationalLevel[]>([]);
-  const [educationalForms, setEducationalForms] = useState<EducationalForm[]>([]);
+
 
   useEffect(() => {
     const fetchData = async () => {
       setIsLoading(true);
       try {
-        // Загрузка направлений с расширенной информацией
+        // Только загрузка направлений
         const dirResponse = await fetch('http://host.docker.internal:8000/directions/');
         if (!dirResponse.ok) throw new Error('Ошибка загрузки направлений');
         const dirData = await dirResponse.json();
         setDirections(dirData);
         if (dirData.length > 0) setSelectedDirection(dirData[0]);
-
-        // Загрузка справочников
-        const [levelsRes, formsRes] = await Promise.all([
-          fetch('http://host.docker.internal:8000/educational-levels/'),
-          fetch('http://host.docker.internal:8000/educational-forms/')
-        ]);
-
-        if (levelsRes.ok) setEducationalLevels(await levelsRes.json());
-        if (formsRes.ok) setEducationalForms(await formsRes.json());
       } catch (err) {
         console.error('Error loading data:', err);
         setError(`Ошибка загрузки: ${err instanceof Error ? err.message : String(err)}`);
@@ -77,13 +60,18 @@ export const InitialModal = ({
         setIsLoading(false);
       }
     };
-
     fetchData();
   }, []);
 
   const handleSubmit = () => {
     if (mode === "open" && selectedDirection) {
-      handleInitialModalClose(selectedDirection.semester_count, selectedDirection.id);
+      handleInitialModalClose({ // Вызываем переданную функцию
+        id: selectedDirection.id,
+        name: selectedDirection.name,
+        level: educationalLevels.find(l => l.id === selectedDirection.educational_level_id)?.name || '',
+        form: educationalForms.find(f => f.id === selectedDirection.educational_form_id)?.name || '',
+        semesters: selectedDirection.semester_count
+      });
     }
   };
 

@@ -41,10 +41,13 @@ export const DisciplineItem = ({
             <div className={table.disciplineInfo}>
                 <span className={table.disciplineInfoItem}> {discipline.examType} </span>
                 <span className={table.disciplineInfoItem}> {discipline.credits} ЗЕ </span>
-                <span className={table.disciplineInfoItem}> {discipline.department_short_name} </span>
+                <span className={table.disciplineInfoItem}> {discipline.department} </span>
                 <span
                     className={table.deleteButton}
-                    onClick={deleteDisc}
+                    onClick={(e) => {
+                        e.stopPropagation(); // Останавливаем всплытие
+                        deleteDisc();        // Вызываем исходный обработчик
+                    }}
                 > <div>X</div> </span>
             </div>
         </div>
