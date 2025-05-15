@@ -3,6 +3,7 @@ import { useModal } from "@/app/hooks/useModal";
 export const useModals = (setColumns: (columns: number) => void) => {
   const initialModal = useModal(true);
   const coreModal = useModal();
+  const saveMapModal = useModal(); // Добавляем новое модальное окно
 
   const handleInitialModalClose = () => {
     const input = document.getElementById("columnInput") as HTMLInputElement;
@@ -12,9 +13,9 @@ export const useModals = (setColumns: (columns: number) => void) => {
 
   const addRow = () => {
     const name = (document.getElementById("newCoreName") as HTMLInputElement)
-      .value;
+        .value;
     const color = (document.getElementById("newCoreColor") as HTMLInputElement)
-      .value;
+        .value;
     coreModal.closeModal();
     return { name, color };
   };
@@ -22,7 +23,9 @@ export const useModals = (setColumns: (columns: number) => void) => {
   return {
     initialModal,
     coreModal,
+    saveMapModal, // Добавляем в возвращаемый объект
     handleInitialModalClose,
     addRow,
+    setColumns, // Добавляем setColumns для использования в компонентах
   };
 };

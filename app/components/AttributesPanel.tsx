@@ -152,10 +152,16 @@ export const AttributesPanel = ({
 
     const getShortExamType = (name: string): string => {
         if (!name) return '';
-        if (name.toLowerCase().replaceAll("ё", "е") == 'дифференцированный зачет') return 'ДЗ'
-        return name.charAt(0).toUpperCase();
+        const normalized = name
+            .replace(/ё/g, 'е')
+            .replace(/Ё/g, 'Е')
+            .toUpperCase();
+        const result = normalized
+            .split(' ')
+            .map(word => word.charAt(0))
+            .join('');
+        return result;
     };
-
 
     return (
         <aside
@@ -195,6 +201,7 @@ export const AttributesPanel = ({
                 }}
                 disabled={!selectedDiscipline || loadingControlTypes}
             >
+                <option value="">-- Не выбрано --</option>
                 {loadingControlTypes ? (
                     <option>Загрузка...</option>
                 ) : (

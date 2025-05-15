@@ -1,9 +1,10 @@
 export interface Discipline {
   id: number;
+  discipline_id: number;
   name: string;
   credits: number;
   examType: string; // Будет хранить "Э", "З", "Д" и т.д.
-  examTypeId?: number; // Добавляем для хранения ID
+  examTypeId: number | null; // Добавляем для хранения ID
   hasCourseWork: boolean;
   hasPracticalWork: boolean;
   department_name: string;

@@ -14,6 +14,7 @@ import { Sidebar } from "@/app/components/Sidebar";
 import { SemesterTable } from "@/app/components/SemesterTable";
 import { AttributesPanel } from "@/app/components/AttributesPanel";
 import { CoreModal } from "@/app/components/CoreModal";
+import { SaveMapModal } from "@/app/components/SaveMapModal";
 
 import { ErrorWindow } from "@/app/components/ErrorWindow";
 
@@ -24,6 +25,7 @@ import { useDragAndDrop } from "@/app/hooks/useDragAndDrop";
 import { useDiscDelete } from "./hooks/useDiscDelete";
 import { useModals } from "@/app/hooks/useModals";
 import { useFileOperations } from "@/app/hooks/useFileOperations";
+import { useSaveMap } from "@/app/hooks/useSaveMap";
 import {
   Discipline,
   DirectionData,
@@ -71,8 +73,9 @@ const Home = () => {
 
   const { handleDisciplineDelete } = useDiscDelete(rows, setRows, disciplines);
 
-  const { initialModal, coreModal } =
-      useModals(setColumns);
+  const { initialModal, coreModal, saveMapModal } = useModals(setColumns);
+
+  const { saveMap, isLoading: isSaving, error: saveError } = useSaveMap();
 
   useEffect(() => {
     const fetchReferences = async () => {
@@ -160,8 +163,6 @@ const Home = () => {
   };
 
   const checkStudyPlan = () => {
-    console.log(rows)
-
     fetch('http://host.docker.internal:8000/validations/validate-up', {
       method: 'POST',
       headers: {
@@ -200,7 +201,29 @@ const Home = () => {
   }, [isDragging, isResizing]);
 
   const handleSaveClick = () => {
-    console.log("Save clicked");
+    if (!currentDirection) {
+      showAlert("Для сохранения карты учебного плана необходимо выбрать направление подготовки");
+    } else {
+      saveMapModal.openModal();
+    }
+  };
+
+  const handleSaveMap = async () => {
+    try {
+      if (!currentDirection) {
+        throw new Error("Направление не выбрано");
+      }
+
+      await saveMap(currentDirection, rows);
+      saveMapModal.closeModal();
+      showAlert("Карта учебного плана успешно сохранена");
+    } catch (err) {
+      showAlert(err instanceof Error ? err.message : "Ошибка сохранения");
+    }
+  };
+
+  const handleSaveMapInfo = () => {
+    showAlert("Сохранение создает новую версию карты учебного плана для выбранного направления");
   };
 
   return (
@@ -262,7 +285,13 @@ const Home = () => {
               handleDrop={handleDrop}
               calculateTotalCredits={calculateTotalCredits}
               calculateColumnCredits={calculateColumnCredits}
-              openCoreModal={coreModal.openModal}
+              openCoreModal={() => {
+                if (!currentDirection) {
+                  showAlert("Для работы с картой учебного плана необходимо выбрать направление подготовки");
+                } else {
+                  coreModal.openModal();
+                }
+              }}
               handleDisciplineDelete={handleDisciplineDelete}
               handleRowDelete={handleRowDelete}
             />
@@ -280,15 +309,25 @@ const Home = () => {
 
       {<button onClick={(e) => {
         console.log(rows)
-        console.log(currentDirection)
       }}>
         кликкк
       </button>}
 
+      {saveMapModal.isOpen && (
+          <SaveMapModal
+              isOpen={saveMapModal.isOpen}
+              onClose={saveMapModal.closeModal}
+              onSave={handleSaveMap}
+              onInfo={handleSaveMapInfo}
+              isLoading={isSaving}
+              error={saveError}
+          />
+      )}
+
       {coreModal.isOpen && (
           <CoreModal
               closeCoreModal={(e) => {
-                  coreModal.closeModal();
+                coreModal.closeModal();
               }}
               onAddExistingCore={(core) => {
                 setRows(prev => [...prev, {
@@ -299,13 +338,26 @@ const Home = () => {
               }}
               onAddNewCore={(coreName) => {
                 setRows(prev => [...prev, {
-                  id: undefined, // Новое ядро без ID
+                  id: undefined,
                   name: coreName,
-                  color: "#FFFFFF", // Цвет по умолчанию
+                  color: "#FFFFFF",
                   data: Array.from({ length: columns }, () => [])
                 }]);
                 coreModal.closeModal();
               }}
+              onAddBasedOnCore={(baseCore, newName) => {
+                // Здесь можно добавить логику загрузки данных из базы для baseCore.id
+                // и создания нового ядра на их основе
+                setRows(prev => [...prev, {
+                  id: undefined,
+                  name: newName,
+                  color: baseCore.color,
+                  data: Array.from({ length: columns }, () => [])
+                  // Можно добавить другие данные из baseCore
+                }]);
+                coreModal.closeModal();
+              }}
+              currentDirection={currentDirection}
           />
       )}
     </div>
