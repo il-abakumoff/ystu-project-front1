@@ -5,6 +5,61 @@ export const useTableState = (initialColumns = 8) => {
   const [columns, setColumns] = useState(initialColumns);
   const [rows, setRows] = useState<TableRow[]>([]);
 
+  const loadFullMap = (mapData: { map_cors: any[] }) => {
+    // Очищаем текущие данные
+    setRows([]);
+
+    // Загружаем каждое ядро из ответа сервера
+    mapData.map_cors.forEach(core => {
+      const newRow: TableRow = {
+        id: core.id,
+        name: core.name,
+        color: "#FFFFFF", // Можно добавить цвет из данных или оставить по умолчанию
+        data: Array.from({ length: columns }, () => []),
+      };
+
+      // Генератор уникальных ID для текущего ядра
+      const usedIds = new Set<number>();
+      const generateUniqueId = () => {
+        let id;
+        do {
+          id = Date.now() + Math.floor(Math.random() * 1000);
+        } while (usedIds.has(id));
+        usedIds.add(id);
+        return id;
+      };
+
+      // Заполняем дисциплины по семестрам
+      core.discipline_blocks.forEach((block: any) => {
+        const semesterIndex = block.semester_number - 1;
+        if (semesterIndex >= 0 && semesterIndex < columns) {
+          newRow.data[semesterIndex].push({
+            block_id: block.id,
+            table_id: generateUniqueId(),
+            id: block.discipline.id,
+            name: block.discipline.name,
+            credits: block.credit_units,
+            examType: block.control_type?.name?.charAt(0) || "", // "Э" для "Экзамен"
+            examTypeId: block.control_type?.id || null,
+            hasCourseWork: false,
+            hasPracticalWork: block.practice_hours > 0,
+            department_id: block.discipline.department.id,
+            department: block.discipline.department.short_name,
+            department_name: block.discipline.department.name,
+            competenceCodes: block.competencies?.map((c: any) => c.id) || [],
+            lectureHours: block.lecture_hours || 0,
+            labHours: block.lab_hours || 0,
+            practicalHours: block.practice_hours || 0,
+            semester: block.semester_number,
+          });
+        }
+      });
+
+      // Добавляем ядро в таблицу
+      setRows(prev => [...prev, newRow]);
+    });
+  };
+
   const initializeTable = (semesters: number) => {
     setColumns(semesters);
   };
@@ -79,14 +134,23 @@ export const useTableState = (initialColumns = 8) => {
       data: Array.from({ length: columns }, () => []),
     };
 
-    // Заполняем дисциплины по семестрам
+    const usedIds = new Set<number>();
+    const generateUniqueId = () => {
+      let id;
+      do {
+        id = Date.now() + Math.floor(Math.random() * 1000);
+      } while (usedIds.has(id));
+      usedIds.add(id);
+      return id;
+    };
+
     coreData.discipline_blocks.forEach((block: any) => {
       const semesterIndex = block.semester_number - 1;
       if (semesterIndex >= 0 && semesterIndex < columns) {
         newRow.data[semesterIndex].push({
           block_id: block.id,
-          table_id: Date.now(), // Временный ID, можно заменить на реальный
-          discipline_id: block.discipline.id,
+          table_id: generateUniqueId(), // Временный ID, можно заменить на реальный
+          id: block.discipline.id,
           name: block.discipline.name,
           credits: block.credit_units,
           examType: block.control_type.name.charAt(0), // "Э" для "Экзамен"
@@ -119,5 +183,6 @@ export const useTableState = (initialColumns = 8) => {
     addRow,
     handleRowDelete,
     loadCoreData,
+    loadFullMap,
   };
 };

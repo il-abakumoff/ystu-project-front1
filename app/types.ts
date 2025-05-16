@@ -1,7 +1,7 @@
 export interface Discipline {
   block_id: number;
   table_id: number;
-  discipline_id: number;
+  id: number;
   name: string;
   credits: number;
   examType: string; // Будет хранить "Э", "З", "Д" и т.д.
@@ -49,8 +49,12 @@ export interface DirectionData {
 }
 
 export interface InitialModalProps {
-  handleInitialModalClose: (data: DirectionData) => void;
+  handleInitialModalClose: (data: {
+    directionData: DirectionData;
+    mapData: any;
+  }) => void;
   onClose: () => void;
   educationalLevels: EducationalLevel[];
   educationalForms: EducationalForm[];
 }
+

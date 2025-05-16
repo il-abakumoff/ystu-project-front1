@@ -55,6 +55,7 @@ const Home = () => {
     addRow,
     handleRowDelete,
     loadCoreData,
+    loadFullMap,
   } = useTableState(currentDirection?.semesters || 8);
 
   const {
@@ -90,9 +91,13 @@ const Home = () => {
     fetchReferences();
   }, []);
 
-  const handleInitialModalClose = (directionData: DirectionData) => {
-    setCurrentDirection(directionData);
-    initializeTable(directionData.semesters);
+  const handleInitialModalClose = (data: {
+    directionData: DirectionData;
+    mapData: any;
+  }) => {
+    setCurrentDirection(data.directionData);
+    initializeTable(data.directionData.semesters);
+    loadFullMap(data.mapData); // Загружаем карту
     closeInitialModal();
   };
 

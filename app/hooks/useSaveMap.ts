@@ -57,7 +57,7 @@ export const useSaveMap = () => {
         row.data.forEach((semesterDisciplines, semesterIndex) => {
             semesterDisciplines.forEach((discipline: Discipline) => {
                 blocks.push({
-                    discipline_id: discipline.discipline_id,
+                    discipline_id: discipline.id,
                     credit_units: discipline.credits,
                     control_type_id: discipline.examTypeId || 1, // Значение по умолчанию
                     lecture_hours: discipline.lectureHours,

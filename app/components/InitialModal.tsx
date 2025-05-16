@@ -66,28 +66,33 @@ export const InitialModal = ({
     const handleSubmit = async () => {
         if (mode === "open" && selectedDirection) {
             try {
+                setIsLoading(true);
                 const response = await fetch(
                     `http://host.docker.internal:8000/directions/${selectedDirection.id}/maps/unload`
                 );
 
-                if (!response.ok) {
-                    throw new Error('Ошибка загрузки карты учебного плана');
-                }
+                if (!response.ok) throw new Error('Ошибка загрузки карты учебного плана');
 
                 const mapData = await response.json();
                 console.log('Загруженные данные карты:', mapData);
 
+                // Передаем данные в родительский компонент
                 handleInitialModalClose({
-                    id: selectedDirection.id,
-                    name: selectedDirection.name,
-                    level: educationalLevels.find(l => l.id === selectedDirection.educational_level_id)?.name || '',
-                    form: educationalForms.find(f => f.id === selectedDirection.educational_form_id)?.name || '',
-                    semesters: selectedDirection.semester_count
+                    directionData: {
+                        id: selectedDirection.id,
+                        name: selectedDirection.name,
+                        level: educationalLevels.find(l => l.id === selectedDirection.educational_level_id)?.name || '',
+                        form: educationalForms.find(f => f.id === selectedDirection.educational_form_id)?.name || '',
+                        semesters: selectedDirection.semester_count
+                    },
+                    mapData // Добавляем данные карты
                 });
 
             } catch (err) {
                 console.error('Ошибка при загрузке карты:', err);
                 setError(err instanceof Error ? err.message : 'Ошибка загрузки карты');
+            } finally {
+                setIsLoading(false);
             }
         }
     };

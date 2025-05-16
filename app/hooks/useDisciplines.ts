@@ -67,7 +67,8 @@ export const useDisciplines = (setRows: (rows: any) => void) => {
               }
 
               return {
-                discipline_id: discipline.table_id,
+                table_id: discipline.table_id,
+                discipline_id: discipline.id ,
                 block_id: null,
                 credits: 1,
                 examType: "",
