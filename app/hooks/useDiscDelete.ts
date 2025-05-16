@@ -19,7 +19,7 @@ export const useDiscDelete = (
         }));
 
         updatedRows[rowIndex].data[colIndex] = updatedRows[rowIndex].data[colIndex].filter(
-            (dataDiscipline) => dataDiscipline.id !== discipline.id
+            (dataDiscipline) => dataDiscipline.table_id !== discipline.table_id
         );
         
         setRows(updatedRows);    

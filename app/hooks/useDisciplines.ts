@@ -67,7 +67,8 @@ export const useDisciplines = (setRows: (rows: any) => void) => {
               }
 
               return {
-                discipline_id: discipline.id,
+                discipline_id: discipline.table_id,
+                block_id: null,
                 credits: 1,
                 examType: "",
                 examTypeId: null,
@@ -98,7 +99,7 @@ export const useDisciplines = (setRows: (rows: any) => void) => {
     if (!selectedDiscipline) return;
 
     const updatedDisciplines = disciplines.map((disc) => {
-      if (disc.id === selectedDiscipline.id) {
+      if (disc.table_id === selectedDiscipline.table_id) {
         return { ...disc, [field]: value };
       }
       return disc;
@@ -112,7 +113,7 @@ export const useDisciplines = (setRows: (rows: any) => void) => {
         ...row,
         data: row.data.map((cell: Discipline[]) =>
           cell.map((d) =>
-            d.id === selectedDiscipline.id ? { ...d, [field]: value } : d,
+            d.table_id === selectedDiscipline.table_id ? { ...d, [field]: value } : d,
           ),
         ),
       })),

@@ -71,8 +71,41 @@ export const useTableState = (initialColumns = 8) => {
     setRows((prevRows) => prevRows.filter((_, index) => index !== rowIndex));
   };
 
-  const loadCore = (coreData: TableRow) => {
-    setRows((prev) => [...prev, coreData]);
+  const loadCoreData = (coreData: any) => {
+    const newRow: TableRow = {
+      id: coreData.id,
+      name: coreData.name,
+      color: "#FFFFFF", // Можно добавить цвет из данных или оставить по умолчанию
+      data: Array.from({ length: columns }, () => []),
+    };
+
+    // Заполняем дисциплины по семестрам
+    coreData.discipline_blocks.forEach((block: any) => {
+      const semesterIndex = block.semester_number - 1;
+      if (semesterIndex >= 0 && semesterIndex < columns) {
+        newRow.data[semesterIndex].push({
+          block_id: block.id,
+          table_id: Date.now(), // Временный ID, можно заменить на реальный
+          discipline_id: block.discipline.id,
+          name: block.discipline.name,
+          credits: block.credit_units,
+          examType: block.control_type.name.charAt(0), // "Э" для "Экзамен"
+          examTypeId: block.control_type.id,
+          hasCourseWork: false, // Можно добавить в API
+          hasPracticalWork: block.practice_hours > 0,
+          department_id: block.discipline.department.id,
+          department: block.discipline.department.short_name,
+          department_name: block.discipline.department.name,
+          competenceCodes: block.competencies.map((c: any) => c.id),
+          lectureHours: block.lecture_hours,
+          labHours: block.lab_hours,
+          practicalHours: block.practice_hours,
+          semester: block.semester_number,
+        });
+      }
+    });
+
+    setRows((prev) => [...prev, newRow]);
   };
 
   return {
@@ -85,5 +118,6 @@ export const useTableState = (initialColumns = 8) => {
     calculateColumnCredits,
     addRow,
     handleRowDelete,
+    loadCoreData,
   };
 };

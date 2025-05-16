@@ -66,16 +66,25 @@ export const CoreModal = ({
     }
   }, [cores, currentDirection]);
 
-  const handleAddExisting = () => {
+  const handleAddExisting = async () => {
     if (!selectedCore) return;
 
-    onAddExistingCore({
-      id: selectedCore.id,
-      name: selectedCore.name,
-      color: selectedCore.color || "#FFFFFF",
-      data: Array(8).fill([])
-    });
-    closeCoreModal({} as React.MouseEvent);
+    try {
+      setIsLoading(true);
+      const response = await fetch(
+          `http://host.docker.internal:8000/map-cors/${selectedCore.id}/unload`
+      );
+
+      if (!response.ok) throw new Error('Ошибка загрузки данных ядра');
+
+      const coreData = await response.json();
+      onAddExistingCore(coreData); // Передаем полные данные в page.tsx
+    } catch (err) {
+      console.error('Ошибка загрузки ядра:', err);
+      setError(`Ошибка: ${err instanceof Error ? err.message : String(err)}`);
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   const handleAddNew = async () => {
@@ -98,34 +107,28 @@ export const CoreModal = ({
   };
 
   // Новый обработчик для создания на основании существующего ядра
-  const handleAddBasedOn = () => {
-    if (!selectedCore) {
-      setError("Выберите ядро для создания на его основе");
+  const handleAddBasedOn = async () => {
+    if (!selectedCore || !basedOnCoreName.trim()) {
+      setError("Выберите ядро и введите название");
       return;
     }
 
-    if (!basedOnCoreName.trim()) {
-      setError("Введите название нового ядра");
-      return;
+    try {
+      setIsLoading(true);
+      const response = await fetch(
+          `http://host.docker.internal:8000/map-cors/${selectedCore.id}/unload`
+      );
+
+      if (!response.ok) throw new Error('Ошибка загрузки данных ядра');
+
+      const coreData = await response.json();
+      onAddBasedOnCore(coreData, basedOnCoreName.trim());
+    } catch (err) {
+      console.error('Ошибка загрузки ядра:', err);
+      setError(`Ошибка: ${err instanceof Error ? err.message : String(err)}`);
+    } finally {
+      setIsLoading(false);
     }
-
-    const exists = cores.some(core =>
-        core.name.toLowerCase() === basedOnCoreName.trim().toLowerCase()
-    );
-
-    if (exists) {
-      setError("Ядро с таким названием уже существует");
-      return;
-    }
-
-    onAddBasedOnCore({
-      id: selectedCore.id,
-      name: selectedCore.name,
-      color: selectedCore.color || "#FFFFFF",
-      data: Array(8).fill([])
-    }, basedOnCoreName.trim());
-
-    closeCoreModal({} as React.MouseEvent);
   };
 
   const handleCloseClick = (e: React.MouseEvent) => {
@@ -220,7 +223,7 @@ export const CoreModal = ({
                     disabled={!selectedCore || isLoading}
                     style={{ marginTop: '10px' }}
                 >
-                  Добавить из базы
+                  {isLoading ? 'Загрузка...' : 'Добавить из базы'}
                 </button>
               </div>
             </div>

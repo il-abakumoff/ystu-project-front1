@@ -98,9 +98,9 @@ export const SemesterTable = ({
                             >
                                 {cell.map((discipline, index) => (
                                     <DisciplineItem
-                                        key={`${discipline.id}-${index}`}
+                                        key={`${discipline.table_id}-${index}`}
                                         discipline={discipline}
-                                        isActive={selectedDiscipline?.id === discipline.id}
+                                        isActive={selectedDiscipline?.table_id === discipline.table_id}
                                         onClick={() => handleDisciplineClick(discipline)}
                                         onDragStart={() =>
                                             handleDragStart(discipline, rowIndex, colIndex)

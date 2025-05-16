@@ -36,7 +36,7 @@ export const useDragAndDrop = (
 
     const newDiscipline: Discipline = {
       ...draggedDiscipline,
-      id: newId,
+      table_id: newId,
       ...(modifier ? modifier(draggedDiscipline) : {}),
       sourcePosition: undefined
     };
@@ -49,7 +49,7 @@ export const useDragAndDrop = (
     if (draggedDiscipline.sourcePosition) {
       const { rowIndex: sri, colIndex: sci } = draggedDiscipline.sourcePosition;
       updatedRows[sri].data[sci] = updatedRows[sri].data[sci].filter(
-        d => d.id !== draggedDiscipline.id
+        d => d.table_id !== draggedDiscipline.table_id
       );
     }
 

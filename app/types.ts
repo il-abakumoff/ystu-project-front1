@@ -1,5 +1,6 @@
 export interface Discipline {
-  id: number;
+  block_id: number;
+  table_id: number;
   discipline_id: number;
   name: string;
   credits: number;

@@ -54,6 +54,7 @@ const Home = () => {
     calculateColumnCredits,
     addRow,
     handleRowDelete,
+    loadCoreData,
   } = useTableState(currentDirection?.semesters || 8);
 
   const {
@@ -111,7 +112,7 @@ const Home = () => {
 
   const handleDisciplineClick = (discipline: Discipline) => {
     const actualDiscipline =
-      disciplines.find((d) => d.id === discipline.id) || discipline;
+      disciplines.find((d) => d.table_id === discipline.table_id) || discipline;
     setSelectedDiscipline(actualDiscipline);
     setIsAttributesPanelVisible(true);
   };
@@ -326,14 +327,9 @@ const Home = () => {
 
       {coreModal.isOpen && (
           <CoreModal
-              closeCoreModal={(e) => {
-                coreModal.closeModal();
-              }}
-              onAddExistingCore={(core) => {
-                setRows(prev => [...prev, {
-                  ...core,
-                  data: Array.from({ length: columns }, () => [])
-                }]);
+              closeCoreModal={(e) => coreModal.closeModal()}
+              onAddExistingCore={(coreData) => {
+                loadCoreData(coreData); // Используем новую функцию из useTableState
                 coreModal.closeModal();
               }}
               onAddNewCore={(coreName) => {
@@ -346,15 +342,12 @@ const Home = () => {
                 coreModal.closeModal();
               }}
               onAddBasedOnCore={(baseCore, newName) => {
-                // Здесь можно добавить логику загрузки данных из базы для baseCore.id
-                // и создания нового ядра на их основе
-                setRows(prev => [...prev, {
-                  id: undefined,
+                const newCore = {
+                  ...baseCore,
+                  id: undefined, // Новое ядро не имеет ID
                   name: newName,
-                  color: baseCore.color,
-                  data: Array.from({ length: columns }, () => [])
-                  // Можно добавить другие данные из baseCore
-                }]);
+                };
+                loadCoreData(newCore);
                 coreModal.closeModal();
               }}
               currentDirection={currentDirection}
